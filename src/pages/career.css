@@ -1,0 +1,268 @@
+.career-page,
+.opportunity-detail-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px 0 30px;
+  color: #9b5e72;
+}
+
+.career-page h1,
+.career-page h2,
+.opportunity-detail-page h1,
+.opportunity-detail-page h2,
+.opportunity-card h3 {
+  color: #9b5e72;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+}
+
+.career-header {
+  margin-bottom: 18px;
+}
+
+.career-overview-grid,
+.career-action-grid,
+.detail-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.career-stat-card,
+.career-panel,
+.opportunity-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(155, 94, 114, 0.18);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.career-stat-card {
+  display: grid;
+  gap: 8px;
+}
+
+.career-stat-card span {
+  color: rgba(155, 94, 114, 0.75);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.career-stat-card strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.career-form,
+.application-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.career-form label,
+.application-editor label,
+.detail-metadata label {
+  display: grid;
+  gap: 6px;
+}
+
+.career-form input,
+.career-form textarea,
+.career-form select,
+.application-editor input,
+.application-editor textarea,
+.application-editor select,
+.detail-metadata input,
+.detail-metadata select,
+.detail-metadata textarea {
+  width: 100%;
+  border: 1px solid rgba(155, 94, 114, 0.24);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #9b5e72;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.career-form textarea,
+.application-editor textarea,
+.detail-metadata textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.field-row,
+.meta-row,
+.eligibility-row,
+.button-row,
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.primary-button,
+.ghost-button,
+.back-button,
+.filter-pill,
+.trash-button {
+  border: 1px solid rgba(155, 94, 114, 0.22);
+  border-radius: 10px;
+  background: #fff;
+  color: #9b5e72;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: #d8f3dc;
+  font-weight: 700;
+}
+
+.filter-pill.active {
+  background: rgba(223, 197, 254, 0.4);
+}
+
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.opportunity-card {
+  display: grid;
+  gap: 12px;
+}
+
+.opportunity-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 8px;
+}
+
+.card-kicker {
+  color: rgba(155, 94, 114, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meta-row span,
+.card-footer span,
+.short-reason {
+  font-size: 12px;
+  color: rgba(155, 94, 114, 0.8);
+}
+
+.eligibility-badge,
+.deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eligibility-badge.eligible {
+  background: rgba(152, 255, 152, 0.35);
+}
+
+.eligibility-badge.ineligible {
+  background: rgba(255, 175, 175, 0.35);
+}
+
+.eligibility-badge.unknown {
+  background: rgba(227, 214, 255, 0.35);
+}
+
+.deadline-badge.upcoming {
+  background: rgba(143, 212, 255, 0.35);
+}
+
+.deadline-badge.passed {
+  background: rgba(255, 192, 203, 0.35);
+}
+
+.card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field-error {
+  color: #8d4d4d;
+  font-size: 11px;
+}
+
+.empty-state {
+  padding: 24px;
+  border: 1px dashed rgba(155, 94, 114, 0.24);
+  border-radius: 12px;
+  color: rgba(155, 94, 114, 0.8);
+}
+
+.detail-layout {
+  margin-top: 18px;
+}
+
+.detail-metadata {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.detail-eligibility-note {
+  margin-top: 12px;
+  color: rgba(155, 94, 114, 0.8);
+}
+
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: #7a5476;
+}
+
+.detail-section {
+  margin-top: 18px;
+}
+
+.project-association-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 560px) {
+  .career-action-grid,
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunity-card-header,
+  .card-footer {
+    display: grid;
+  }
+}

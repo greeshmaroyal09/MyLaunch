@@ -1,0 +1,338 @@
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --theme-background: #21191d;
+  --theme-surface: #2d2228;
+  --theme-surface-raised: #382a31;
+  --theme-text-primary: #f5eaf0;
+  --theme-text-secondary: #d0bbc4;
+  --theme-border: rgba(223, 197, 254, 0.2);
+  --theme-accent: #d49aaa;
+  --theme-accent-soft: rgba(223, 197, 254, 0.16);
+  --theme-success: #98ff98;
+  --theme-success-soft: rgba(152, 255, 152, 0.16);
+  --theme-input: #271e23;
+  --theme-shadow: rgba(0, 0, 0, 0.34);
+}
+
+html[data-theme='dark'],
+html[data-theme='dark'] body {
+  background: var(--theme-background);
+  color: var(--theme-text-primary);
+}
+
+html[data-theme='dark'] ::selection { color: #21191d; background: #dfc5fe; }
+html[data-theme='dark'] button:focus-visible,
+html[data-theme='dark'] a:focus-visible,
+html[data-theme='dark'] input:focus-visible,
+html[data-theme='dark'] select:focus-visible,
+html[data-theme='dark'] textarea:focus-visible { outline-color: #dfc5fe; }
+
+html[data-theme='dark'] .app-shell,
+html[data-theme='dark'] .workspace,
+html[data-theme='dark'] .main-content { background: var(--theme-background); color: var(--theme-text-primary); }
+html[data-theme='dark'] .topbar,
+html[data-theme='dark'] .sidebar,
+html[data-theme='dark'] .mobile-nav,
+html[data-theme='dark'] .mobile-more-menu,
+html[data-theme='dark'] .career-stat-card,
+html[data-theme='dark'] .career-panel,
+html[data-theme='dark'] .opportunity-card,
+html[data-theme='dark'] .project-create-panel,
+html[data-theme='dark'] .project-list-panel,
+html[data-theme='dark'] .project-detail-panel,
+html[data-theme='dark'] .project-card,
+html[data-theme='dark'] .weekly-test-card,
+html[data-theme='dark'] .weekly-test-overview,
+html[data-theme='dark'] .weekly-question-panel,
+html[data-theme='dark'] .weekly-answer-options label,
+html[data-theme='dark'] .weekly-result-panel,
+html[data-theme='dark'] .weekly-postpone-form,
+html[data-theme='dark'] .calendar-month,
+html[data-theme='dark'] .calendar-day-detail,
+html[data-theme='dark'] .calendar-day,
+html[data-theme='dark'] .curriculum-progress,
+html[data-theme='dark'] .curriculum-subject,
+html[data-theme='dark'] .curriculum-snapshot,
+html[data-theme='dark'] .progress-overview,
+html[data-theme='dark'] .progress-weekly,
+html[data-theme='dark'] .progress-subjects,
+html[data-theme='dark'] .progress-panel,
+html[data-theme='dark'] .progress-mini,
+html[data-theme='dark'] .schedule-summary,
+html[data-theme='dark'] .subject-completion,
+html[data-theme='dark'] .internship-stat,
+html[data-theme='dark'] .internship-list-panel,
+html[data-theme='dark'] .internship-form-panel,
+html[data-theme='dark'] .settings-panel,
+html[data-theme='dark'] .points-display,
+html[data-theme='dark'] .today-panel,
+html[data-theme='dark'] .today-task-section,
+html[data-theme='dark'] .roadmap-panel {
+  border-color: var(--theme-border);
+  background-color: var(--theme-surface);
+  color: var(--theme-text-primary);
+}
+
+html[data-theme='dark'] .app-shell :is(h1, h2, h3, h4, p, span, strong, small, label, li, time, legend, dt, dd) {
+  color: var(--theme-text-primary);
+}
+html[data-theme='dark'] .app-shell :is(.topbar-mark, .today-date, .sidebar-caption, .section-eyebrow, .welcome-kicker, .welcome-copy p, .welcome-day small, .avatar-kicker, .avatar-message p, .today-intro, .roadmap-intro, .task-copy span, .task-prerequisite, .task-time, .task-reward, .task-reward small, .task-event-message, .schedule-compact-summary, .empty-schedule, .roadmap-caption, .curriculum-heading p, .curriculum-module-name, .curriculum-module-progress, .curriculum-task-copy > span, .curriculum-task-copy small, .roadmap-progress-note, .curriculum-note, .snapshot-label, .snapshot-empty, .snapshot-locked, .progress-eyebrow, .progress-intro, .progress-overview-caption, .progress-xp-line, .progress-metric span, .progress-metric small, .progress-subject-count, .progress-subject-value span, .progress-track-note, .progress-activity-copy span, .progress-activity-row time, .progress-panel-footnote, .progress-review-topics, .settings-eyebrow, .settings-panel-heading p, .settings-data-detail span, .internships-eyebrow, .internships-header p, .internship-list-heading > span, .internship-form-heading > span, .internship-filters label, .internship-form label, .internship-company-name, .internship-meta, .internship-app-status, .internship-empty-state p, .internship-empty-filter, .internship-form-note, .career-stat-card span, .card-kicker, .meta-row span, .card-footer span, .short-reason, .detail-eligibility-note, .project-category, .tech-stack, .readiness-list li, .empty-projects, .calendar-config-note, .calendar-weekday, .calendar-day-counts, .calendar-legend-marker, .calendar-day-stats span, .calendar-day-message, .leave-form small, .weekly-test-page-heading p, .weekly-test-card-eyebrow, .weekly-test-card-copy small, .weekly-test-empty p, .weekly-test-empty > span, .weekly-question-topline, .weekly-question-source, .weekly-answer-options legend, .weekly-test-answer-count, .weekly-postpone-form small, .weekly-result-title p, .weekly-result-split span, .weekly-review-topics p, .weekly-reward-note) {
+  color: var(--theme-text-secondary);
+}
+
+html[data-theme='dark'] .app-shell a,
+html[data-theme='dark'] .app-shell :is(.brand-lockup, .view-today-button, .roadmap-link, .external-link, .task-resource-link, .curriculum-task-resource-pill) { color: var(--theme-accent); }
+html[data-theme='dark'] .app-shell :is(h1, h2, h3, h4, .points-value, .progress-section-heading h2, .progress-panel-heading h2, .internships-header h1, .internship-list-heading h2, .internship-form-heading h2, .jobs-header h1, .job-list-heading h2, .job-form-heading h2, .career-page h1, .career-page h2, .opportunity-detail-page h1, .opportunity-detail-page h2, .projects-page h1, .projects-page h2, .project-detail-page h1, .project-detail-page h2, .calendar-page-heading h1, .calendar-month-heading h2, .calendar-day-detail h2, .weekly-test-page-heading h1, .weekly-question-panel h2, .settings-heading h1, .settings-panel-heading h2) { color: var(--theme-accent); }
+
+html[data-theme='dark'] .app-shell button {
+  border-color: var(--theme-border);
+  background-color: var(--theme-surface-raised);
+  color: var(--theme-text-primary);
+}
+html[data-theme='dark'] .app-shell button:hover:not(:disabled) { background-color: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .app-shell button:disabled { color: #a9969e; }
+html[data-theme='dark'] .app-shell :is(.brand-lockup, .nav-item, .mobile-more, .curriculum-track-tabs button, .progress-filter button, .project-filters button, .filter-pill, .roadmap-link, .view-today-button) { background-color: transparent; }
+html[data-theme='dark'] .nav-item { color: var(--theme-text-secondary); }
+html[data-theme='dark'] .nav-item:hover,
+html[data-theme='dark'] .nav-item.active,
+html[data-theme='dark'] .filter-pill.active,
+html[data-theme='dark'] .project-filters button.is-active,
+html[data-theme='dark'] .curriculum-track-tabs button.active { background-color: rgba(223, 197, 254, 0.18); color: var(--theme-accent); }
+html[data-theme='dark'] .nav-item.active,
+html[data-theme='dark'] .curriculum-track-tabs button.active { border-left-color: var(--theme-accent); border-bottom-color: var(--theme-accent); }
+html[data-theme='dark'] .icon-button,
+html[data-theme='dark'] .task-complete,
+html[data-theme='dark'] .task-skip,
+html[data-theme='dark'] .weekly-test-open,
+html[data-theme='dark'] .calendar-month-nav,
+html[data-theme='dark'] .remove-leave-button,
+html[data-theme='dark'] .weekly-test-secondary-action,
+html[data-theme='dark'] .project-secondary-button,
+html[data-theme='dark'] .project-delete-button,
+html[data-theme='dark'] .project-back-button,
+html[data-theme='dark'] .ghost-button,
+html[data-theme='dark'] .back-button,
+html[data-theme='dark'] .filter-pill,
+html[data-theme='dark'] .trash-button,
+html[data-theme='dark'] .internship-open-button { background-color: var(--theme-surface-raised); color: var(--theme-text-primary); }
+html[data-theme='dark'] .job-open-button { background-color: var(--theme-surface-raised); color: var(--theme-text-primary); }
+html[data-theme='dark'] .primary-button,
+html[data-theme='dark'] .project-primary-button,
+html[data-theme='dark'] .weekly-test-primary-action,
+html[data-theme='dark'] .weekly-test-secondary-action:not(:disabled),
+html[data-theme='dark'] .leave-form button:not(:disabled),
+html[data-theme='dark'] .internship-primary-button,
+html[data-theme='dark'] .job-primary-button {
+  border-color: #b8778b;
+  background-color: #8e5268;
+  color: #fff;
+}
+html[data-theme='dark'] .task-complete.is-completed,
+html[data-theme='dark'] .project-status-idea,
+html[data-theme='dark'] .project-status-planned,
+html[data-theme='dark'] .project-status-in_progress,
+html[data-theme='dark'] .weekly-test-status-available,
+html[data-theme='dark'] .weekly-test-status-in_progress,
+html[data-theme='dark'] .weekly-test-status-completed,
+html[data-theme='dark'] .calendar-day-learning_day .calendar-day-state,
+html[data-theme='dark'] .calendar-status-pill:not(.calendar-status-holiday):not(.calendar-status-leave) {
+  background-color: rgba(152, 255, 152, 0.22);
+  color: #b7ffc0;
+}
+
+html[data-theme='dark'] .app-shell :is(input, select, textarea) {
+  border-color: var(--theme-border);
+  background-color: var(--theme-input);
+  color: var(--theme-text-primary);
+}
+html[data-theme='dark'] .app-shell :is(input, textarea)::placeholder { color: #ad99a2; }
+html[data-theme='dark'] .app-shell select option { background: var(--theme-surface); color: var(--theme-text-primary); }
+html[data-theme='dark'] .app-shell input[type='checkbox'],
+html[data-theme='dark'] .app-shell input[type='radio'] { accent-color: #dfc5fe; }
+
+html[data-theme='dark'] .topbar { background: #271e23; }
+html[data-theme='dark'] .mobile-nav,
+html[data-theme='dark'] .mobile-more-menu,
+html[data-theme='dark'] .sidebar { background: #271e23; }
+html[data-theme='dark'] .sidebar-footer { border-color: var(--theme-border); }
+html[data-theme='dark'] .avatar-banner { border-color: var(--theme-border); background: #463442; }
+html[data-theme='dark'] .avatar-message h2,
+html[data-theme='dark'] .avatar-message p,
+html[data-theme='dark'] .avatar-kicker { color: #f5eaf0; }
+html[data-theme='dark'] .avatar-backdrop,
+html[data-theme='dark'] .avatar-backdrop::before,
+html[data-theme='dark'] .avatar-backdrop::after { border-color: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .points-display { background: rgba(45, 34, 40, 0.92); }
+html[data-theme='dark'] .today-panel,
+html[data-theme='dark'] .roadmap-panel { background: var(--theme-surface); }
+html[data-theme='dark'] .home-calendar-strip,
+html[data-theme='dark'] .schedule-compact-summary span,
+html[data-theme='dark'] .curriculum-subject-heading,
+html[data-theme='dark'] .curriculum-task,
+html[data-theme='dark'] .task-row,
+html[data-theme='dark'] .calendar-day-stats span,
+html[data-theme='dark'] .leave-reason,
+html[data-theme='dark'] .weekly-test-breakdown span,
+html[data-theme='dark'] .weekly-test-notice,
+html[data-theme='dark'] .weekly-review-topics li,
+html[data-theme='dark'] .progress-review-split span,
+html[data-theme='dark'] .progress-compact-stat,
+html[data-theme='dark'] .progress-empty-state,
+html[data-theme='dark'] .progress-filter,
+html[data-theme='dark'] .internship-eligibility,
+html[data-theme='dark'] .internship-company-mark,
+html[data-theme='dark'] .internship-detail .detail-skill-groups > div {
+  background-color: rgba(223, 197, 254, 0.12);
+}
+html[data-theme='dark'] .task-row-completed,
+html[data-theme='dark'] .task-row-completed { background: rgba(152, 255, 152, 0.08); }
+html[data-theme='dark'] .task-row-skipped { background: rgba(223, 197, 254, 0.09); }
+html[data-theme='dark'] .task-row-completed .task-icon,
+html[data-theme='dark'] .task-icon { background: rgba(223, 197, 254, 0.16); color: var(--theme-accent); }
+html[data-theme='dark'] .task-row-completed .task-icon { background: rgba(152, 255, 152, 0.2); }
+html[data-theme='dark'] .task-complete.is-completed,
+html[data-theme='dark'] .task-status-dot.is-completed,
+html[data-theme='dark'] .progress-mini-check { color: #b7ffc0; }
+html[data-theme='dark'] .task-resource-link,
+html[data-theme='dark'] .curriculum-task-resource-pill { border-color: var(--theme-border); background: rgba(223, 197, 254, 0.1); }
+html[data-theme='dark'] .curriculum-progress-track,
+html[data-theme='dark'] .snapshot-progress-track,
+html[data-theme='dark'] .progress-track,
+html[data-theme='dark'] .progress-mini-track,
+html[data-theme='dark'] .weekly-question-progress { background: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .curriculum-progress-track span,
+html[data-theme='dark'] .snapshot-progress-track span,
+html[data-theme='dark'] .progress-track span,
+html[data-theme='dark'] .progress-mini-track span,
+html[data-theme='dark'] .weekly-question-progress span { background: #98ff98; }
+html[data-theme='dark'] .roadmap-landscape { background-color: #2b2228; background-image: radial-gradient(rgba(223, 197, 254, 0.14) 0.8px, transparent 0.8px); }
+html[data-theme='dark'] .path-shadow { stroke: rgba(0, 0, 0, 0.28); }
+html[data-theme='dark'] .path-line { stroke: #624656; }
+html[data-theme='dark'] .path-center { stroke: rgba(245, 234, 240, 0.72); }
+html[data-theme='dark'] .level-marker,
+html[data-theme='dark'] .level-locked .level-marker,
+html[data-theme='dark'] .map-animal,
+html[data-theme='dark'] .map-character > span,
+html[data-theme='dark'] .map-locked-note { border-color: var(--theme-border); background: var(--theme-surface-raised); color: var(--theme-text-primary); box-shadow: none; }
+html[data-theme='dark'] .level-current .level-marker { background: #624656; box-shadow: 0 0 0 5px rgba(152, 255, 152, 0.14); }
+html[data-theme='dark'] .level-complete .level-marker { background: rgba(152, 255, 152, 0.22); color: #b7ffc0; }
+html[data-theme='dark'] .character-halo,
+html[data-theme='dark'] .character-halo::before,
+html[data-theme='dark'] .character-halo::after { border-color: rgba(223, 197, 254, 0.32); }
+html[data-theme='dark'] .character-figure { background: #624656; color: #f5eaf0; }
+
+html[data-theme='dark'] .calendar-grid { border-color: var(--theme-border); }
+html[data-theme='dark'] .calendar-weekday,
+html[data-theme='dark'] .calendar-day { border-color: var(--theme-border); background: var(--theme-surface); color: var(--theme-text-primary); }
+html[data-theme='dark'] .calendar-day:hover,
+html[data-theme='dark'] .calendar-day.is-selected { background: rgba(223, 197, 254, 0.16); }
+html[data-theme='dark'] .calendar-day.is-outside-month { background: rgba(223, 197, 254, 0.06); color: #a9969e; }
+html[data-theme='dark'] .calendar-day.is-today .calendar-day-number { background: #624656; color: #fff; }
+html[data-theme='dark'] .calendar-day-holiday .calendar-day-state { background: #dfc5fe; }
+html[data-theme='dark'] .calendar-day-leave .calendar-day-state { background: #d49aaa; }
+html[data-theme='dark'] .calendar-status-holiday { background: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .calendar-status-leave { background: rgba(212, 154, 170, 0.2); }
+
+html[data-theme='dark'] .weekly-test-empty { border-color: var(--theme-border); background: rgba(223, 197, 254, 0.1); }
+html[data-theme='dark'] .weekly-test-empty > svg,
+html[data-theme='dark'] .weekly-test-status,
+html[data-theme='dark'] .weekly-result-score { background: rgba(223, 197, 254, 0.18); color: var(--theme-text-primary); }
+html[data-theme='dark'] .weekly-answer-options label.is-selected { border-color: #dfc5fe; background: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .weekly-test-status-available,
+html[data-theme='dark'] .weekly-test-status-in_progress,
+html[data-theme='dark'] .weekly-test-status-completed { background: rgba(152, 255, 152, 0.18); color: #b7ffc0; }
+
+html[data-theme='dark'] .project-status-completed { background: rgba(152, 255, 152, 0.2); color: #b7ffc0; }
+html[data-theme='dark'] .project-readiness-pill,
+html[data-theme='dark'] .project-status { background-color: rgba(223, 197, 254, 0.14); color: var(--theme-text-primary); }
+html[data-theme='dark'] .project-status-idea,
+html[data-theme='dark'] .project-status-planned,
+html[data-theme='dark'] .project-status-in_progress { background: rgba(152, 255, 152, 0.16); color: #b7ffc0; }
+html[data-theme='dark'] .readiness-list li.is-ready { color: #b7ffc0; }
+html[data-theme='dark'] .empty-projects,
+html[data-theme='dark'] .empty-state { border-color: var(--theme-border); color: var(--theme-text-secondary); }
+html[data-theme='dark'] .career-page,
+html[data-theme='dark'] .opportunity-detail-page,
+html[data-theme='dark'] .projects-page,
+html[data-theme='dark'] .project-detail-page,
+html[data-theme='dark'] .calendar-page,
+html[data-theme='dark'] .weekly-test-page,
+html[data-theme='dark'] .curriculum-roadmap,
+html[data-theme='dark'] .curriculum-snapshot { color: var(--theme-text-primary); }
+html[data-theme='dark'] .career-form :is(input, textarea, select),
+html[data-theme='dark'] .application-editor :is(input, textarea, select),
+html[data-theme='dark'] .detail-metadata :is(input, textarea, select),
+html[data-theme='dark'] .project-create-form :is(input, textarea, select),
+html[data-theme='dark'] .project-edit-grid :is(input, textarea, select),
+html[data-theme='dark'] .project-inline-form input,
+html[data-theme='dark'] .leave-form input,
+html[data-theme='dark'] .weekly-postpone-controls input,
+html[data-theme='dark'] .internship-form :is(input, textarea, select),
+html[data-theme='dark'] .internship-filters select,
+html[data-theme='dark'] .internship-search input { background: var(--theme-input); color: var(--theme-text-primary); }
+html[data-theme='dark'] .primary-button,
+html[data-theme='dark'] .project-primary-button,
+html[data-theme='dark'] .weekly-test-primary-action,
+html[data-theme='dark'] .weekly-postpone-controls button,
+html[data-theme='dark'] .leave-form button,
+html[data-theme='dark'] .internship-primary-button { background: #8e5268; color: #fff; }
+html[data-theme='dark'] .deadline-badge.upcoming,
+html[data-theme='dark'] .project-status-completed { background: rgba(223, 197, 254, 0.18); color: #e3c5d1; }
+html[data-theme='dark'] .eligibility-badge.eligible,
+html[data-theme='dark'] .internship-eligibility.eligible { background: rgba(152, 255, 152, 0.18); color: #b7ffc0; }
+html[data-theme='dark'] .eligibility-badge.unknown,
+html[data-theme='dark'] .internship-eligibility.unknown { background: rgba(223, 197, 254, 0.16); color: #e2c8ef; }
+html[data-theme='dark'] .eligibility-badge.ineligible,
+html[data-theme='dark'] .deadline-badge.passed,
+html[data-theme='dark'] .field-error,
+html[data-theme='dark'] .project-validation-message,
+html[data-theme='dark'] .internship-form-error { background: rgba(212, 154, 170, 0.14); color: #f0b9c4; }
+html[data-theme='dark'] .internship-eligibility.ineligible { background: rgba(212, 154, 170, 0.14); color: #f0b9c4; }
+html[data-theme='dark'] .task-row-skipped .task-icon { background: rgba(223, 197, 254, 0.18); }
+html[data-theme='dark'] .placeholder-page { background: radial-gradient(ellipse at 12% 10%, rgba(223, 197, 254, 0.1), transparent 56%); }
+html[data-theme='dark'] .profile-initial { background: #624656; color: #f5eaf0; }
+html[data-theme='dark'] .settings-theme-options label { background: var(--theme-surface-raised); color: var(--theme-text-secondary); }
+html[data-theme='dark'] .settings-theme-options label.is-selected { border-color: #dfc5fe; background: rgba(223, 197, 254, 0.16); color: #ead8f2; }
+html[data-theme='dark'] .settings-theme-options input { background: transparent; }
+html[data-theme='dark'] .progress-overview-main { background: linear-gradient(110deg, rgba(223, 197, 254, 0.12), rgba(45, 34, 40, 0.96) 76%); }
+html[data-theme='dark'] .progress-subject-value strong,
+html[data-theme='dark'] .progress-assessment-score strong,
+html[data-theme='dark'] .progress-career-summary strong,
+html[data-theme='dark'] .internship-stat strong { color: var(--theme-accent); }
+html[data-theme='dark'] .progress-subject-row,
+html[data-theme='dark'] .progress-activity-row,
+html[data-theme='dark'] .settings-data-detail { border-color: var(--theme-border); }
+html[data-theme='dark'] .progress-filter button[aria-pressed='true'] { background: #4a3742; color: #f5eaf0; }
+html[data-theme='dark'] .resources-track-filter { background: var(--theme-accent-soft); }
+html[data-theme='dark'] .resources-track-filter button { border: 0; background: transparent; color: var(--theme-text-secondary); }
+html[data-theme='dark'] .resources-track-filter button[aria-pressed='true'] { background: var(--theme-surface-raised); color: var(--theme-accent); box-shadow: 0 1px 4px var(--theme-shadow); }
+html[data-theme='dark'] .progress-track-tag.is-primary { background: rgba(223, 197, 254, 0.18); color: #e2c8ef; }
+html[data-theme='dark'] .progress-track-tag.is-secondary { background: rgba(152, 255, 152, 0.15); color: #b7ffc0; }
+html[data-theme='dark'] .internship-stat,
+html[data-theme='dark'] .internship-list-panel,
+html[data-theme='dark'] .internship-form-panel { background: var(--theme-surface); }
+html[data-theme='dark'] .internship-open-button { background: var(--theme-surface-raised); }
+html[data-theme='dark'] .internship-deadline.upcoming { color: #e3c5d1; }
+html[data-theme='dark'] .internship-deadline.passed { color: #f0b9c4; }
+html[data-theme='dark'] .internship-row,
+html[data-theme='dark'] .internship-filters,
+html[data-theme='dark'] .internship-form-panel { border-color: var(--theme-border); }
+html[data-theme='dark'] .internship-eligibility { color: #e2c8ef; }
+html[data-theme='dark'] .internship-eligibility.eligible { color: #b7ffc0; }
+html[data-theme='dark'] .internship-empty-state,
+html[data-theme='dark'] .internship-empty-filter { color: var(--theme-text-secondary); }
+html[data-theme='dark'] .settings-panel-icon.is-mint { background: rgba(152, 255, 152, 0.15); color: #b7ffc0; }
+html[data-theme='dark'] .project-validation-message,
+html[data-theme='dark'] .field-error,
+html[data-theme='dark'] .weekly-validation-message { color: #f0b9c4 !important; }
+html[data-theme='dark'] .project-delete-button:hover,
+html[data-theme='dark'] .trash-button:hover,
+html[data-theme='dark'] .task-skip:not(:disabled):hover { background: rgba(212, 154, 170, 0.18); }
+html[data-theme='dark'] .weekly-test-history,
+html[data-theme='dark'] .weekly-review-topics,
+html[data-theme='dark'] .weekly-reward-note { border-color: var(--theme-border); }
+html[data-theme='dark'] .calendar-day.is-selected { outline-color: #dfc5fe; }
+html[data-theme='dark'] .project-detail-panel,
+html[data-theme='dark'] .career-panel,
+html[data-theme='dark'] .project-list-panel,
+html[data-theme='dark'] .project-create-panel { box-shadow: 0 8px 24px var(--theme-shadow); }

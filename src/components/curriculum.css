@@ -1,0 +1,115 @@
+.curriculum-roadmap, .curriculum-snapshot { min-width: 0; color: #9b5e72; }
+.curriculum-roadmap { max-width: 1000px; margin: 3px auto 0; animation: page-arrive 350ms ease-out both; }
+.curriculum-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.curriculum-heading h1 { margin: 5px 0 6px; color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 36px; font-weight: 500; line-height: 1.12; }
+.curriculum-heading p { color: rgba(155, 94, 114, 0.78); font-size: 12px; line-height: 1.6; }
+.curriculum-count { display: grid; gap: 2px; text-align: right; }
+.curriculum-count strong { font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 500; }
+.curriculum-count span { font-size: 9px; }
+.curriculum-progress { padding: 13px 15px; border: 1px solid rgba(155, 94, 114, 0.19); background: #fff; }
+.curriculum-progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10px; }
+.curriculum-progress-label strong { font-size: 10px; }
+.curriculum-progress-track, .snapshot-progress-track { height: 7px; overflow: hidden; background: rgba(223, 197, 254, 0.62); }
+.curriculum-progress-track span, .snapshot-progress-track span { height: 100%; display: block; background: #98ff98; transition: width 220ms ease; }
+.roadmap-progress-note { margin: 8px 0 1px; color: rgba(155, 94, 114, 0.8); font-size: 9px; }
+.curriculum-track-tabs { display: flex; gap: 0; margin: 17px 0 12px; border-bottom: 1px solid rgba(155, 94, 114, 0.21); }
+.curriculum-track-tabs button { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: rgba(155, 94, 114, 0.72); font-size: 11px; cursor: pointer; }
+.curriculum-track-tabs button.active { border-bottom-color: #9b5e72; color: #9b5e72; font-weight: 700; }
+.curriculum-track-tabs button span { min-width: 18px; padding: 2px 4px; background: rgba(223, 197, 254, 0.55); text-align: center; font-size: 9px; }
+.curriculum-subject-list { display: grid; gap: 10px; }
+.curriculum-subject { min-width: 0; border: 1px solid rgba(155, 94, 114, 0.18); background: rgba(255, 255, 255, 0.9); }
+.curriculum-subject-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; border-bottom: 1px solid rgba(155, 94, 114, 0.13); background: rgba(223, 197, 254, 0.2); }
+.curriculum-subject-heading > div { min-width: 0; display: flex; align-items: center; gap: 12px; }
+.curriculum-subject-index { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; background: #dfc5fe; font-family: 'Fraunces', Georgia, serif; font-size: 12px; }
+.curriculum-subject-heading h2 { margin: 0; overflow-wrap: anywhere; color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 500; }
+.curriculum-module-name { display: block; margin-top: 3px; color: rgba(155, 94, 114, 0.72); font-size: 9px; }
+.subject-completion { flex: 0 0 auto; padding: 4px 6px; border: 1px solid rgba(155, 94, 114, 0.19); background: #fff; font-size: 9px; }
+.curriculum-module { padding: 2px 15px 8px; }
+.curriculum-module-progress { display: flex; justify-content: space-between; gap: 8px; padding: 7px 8px 4px; color: rgba(155, 94, 114, 0.78); font-size: 8px; font-weight: 700; }
+.curriculum-module-progress small { font-size: 8px; font-weight: 500; }
+.curriculum-topic { padding-top: 10px; }
+.topic-heading { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; color: #9b5e72; font-size: 10px; font-weight: 700; }
+.topic-heading > span { width: 5px; height: 5px; background: #9b5e72; }
+.curriculum-task { display: grid; grid-template-columns: 23px minmax(0, 1fr) minmax(65px, auto); align-items: center; gap: 8px; min-height: 46px; padding: 6px 8px; border-top: 1px solid rgba(155, 94, 114, 0.09); }
+.curriculum-task-state { width: 22px; height: 22px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(155, 94, 114, 0.28); background: #fff; color: #9b5e72; cursor: pointer; }
+.curriculum-task-state:disabled { cursor: not-allowed; }
+.curriculum-task-available .curriculum-task-state, .curriculum-task-in_progress .curriculum-task-state { border-color: #9b5e72; background: #98ff98; }
+.curriculum-task-completed .curriculum-task-state { border-color: rgba(155, 94, 114, 0.2); background: #98ff98; }
+.curriculum-task-locked .curriculum-task-state { border-style: dashed; color: rgba(155, 94, 114, 0.65); }
+.curriculum-task-copy { min-width: 0; display: grid; gap: 2px; }
+.curriculum-task-copy strong { overflow-wrap: anywhere; font-size: 10px; font-weight: 600; }
+.curriculum-task-copy > span { color: rgba(155, 94, 114, 0.72); font-size: 9px; }
+.curriculum-task-copy small { color: rgba(155, 94, 114, 0.8); font-size: 8px; }
+.curriculum-task-resources { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.curriculum-task-resource-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border: 1px solid rgba(155, 94, 114, 0.18); background: rgba(223, 197, 254, 0.16); color: #9b5e72; text-decoration: none; font-size: 7px; font-weight: 700; letter-spacing: 0.4px; }
+.curriculum-task-resource-pill:hover { background: rgba(223, 197, 254, 0.28); }
+.curriculum-task-status { justify-self: end; padding: 4px 6px; background: rgba(223, 197, 254, 0.3); font-size: 8px; text-align: right; }
+.curriculum-task-available .curriculum-task-status, .curriculum-task-in_progress .curriculum-task-status { background: rgba(152, 255, 152, 0.48); }
+.curriculum-task-completed .curriculum-task-status { background: rgba(152, 255, 152, 0.48); }
+.curriculum-note { margin: 12px 0; color: rgba(155, 94, 114, 0.68); font-size: 9px; line-height: 1.5; }
+
+.curriculum-snapshot { margin-top: 16px; padding: 14px 13px; border: 1px solid rgba(155, 94, 114, 0.16); background: rgba(255, 255, 255, 0.85); }
+.snapshot-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.snapshot-heading h2 { margin: 4px 0 0; color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 18px; font-weight: 500; }
+.roadmap-link { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; padding: 5px 0; border: 0; background: transparent; color: #9b5e72; font-size: 9px; font-weight: 700; cursor: pointer; }
+.roadmap-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.snapshot-progress-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; margin-top: 11px; }
+.snapshot-progress-track { height: 5px; }
+.snapshot-progress-row strong { font-size: 9px; }
+.snapshot-progress-row > span { color: rgba(155, 94, 114, 0.73); font-size: 8px; white-space: nowrap; }
+.snapshot-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 13px; padding-top: 11px; border-top: 1px solid rgba(155, 94, 114, 0.13); }
+.snapshot-label { margin-bottom: 6px; color: rgba(155, 94, 114, 0.69); font-size: 8px; font-weight: 700; letter-spacing: 0.7px; }
+.snapshot-module-list, .snapshot-next-list { display: grid; gap: 5px; }
+.snapshot-module-list span, .snapshot-next-list span { overflow-wrap: anywhere; color: #9b5e72; font-size: 9px; line-height: 1.35; }
+.snapshot-module-list small, .snapshot-empty { color: rgba(155, 94, 114, 0.68); font-size: 8px; }
+.snapshot-empty { margin: 0; }
+.snapshot-locked { display: flex; align-items: center; gap: 6px; margin-top: 11px; padding-top: 9px; border-top: 1px solid rgba(155, 94, 114, 0.13); color: rgba(155, 94, 114, 0.75); font-size: 8px; }
+.curriculum-snapshot-compact { margin-top: 12px; padding: 10px 9px; }
+.curriculum-snapshot-compact .snapshot-heading h2 { font-size: 16px; }
+.curriculum-snapshot-compact .snapshot-progress-row { grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.curriculum-snapshot-compact .snapshot-progress-row > span { display: none; }
+
+.progress-mini { display: flex; align-items: center; gap: 15px; padding: 12px 14px; border: 1px solid rgba(155, 94, 114, 0.18); background: rgba(255, 255, 255, 0.9); }
+.progress-mini-level { min-width: 140px; flex: 1 1 auto; }
+.progress-mini-level-heading { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #9b5e72; font-size: 8px; font-weight: 700; }
+.progress-mini-level-heading strong { font-size: 8px; }
+.progress-mini-track { height: 5px; overflow: hidden; background: rgba(223, 197, 254, 0.72); }
+.progress-mini-track span { height: 100%; display: block; background: #98ff98; }
+.progress-mini-stat { display: flex; align-items: center; gap: 5px; flex: 0 0 auto; color: #9b5e72; font-size: 9px; white-space: nowrap; }
+.progress-mini-stat svg { color: #9b5e72; }
+.progress-mini-check { width: 15px; height: 15px; display: grid; place-items: center; background: rgba(152, 255, 152, 0.65); font-size: 10px; font-weight: 700; }
+.progress-mini-compact { flex-wrap: wrap; gap: 8px 12px; margin-top: 10px; padding: 9px 10px; }
+.progress-mini-compact .progress-mini-level { flex-basis: 100%; }
+.progress-mini-compact .progress-mini-stat { font-size: 8px; }
+.progress-mini-compact .progress-mini-stat svg { width: 12px; }
+
+@media (max-width: 760px) {
+  .curriculum-roadmap { margin-top: 0; }
+  .curriculum-heading { align-items: flex-start; margin-bottom: 14px; }
+  .curriculum-heading h1 { font-size: 31px; }
+  .curriculum-heading p { max-width: 280px; font-size: 11px; }
+  .curriculum-count { padding-top: 5px; }
+  .curriculum-count strong { font-size: 19px; }
+  .curriculum-count span { font-size: 8px; }
+  .curriculum-track-tabs { overflow-x: auto; }
+  .curriculum-track-tabs button { flex: 1 0 auto; justify-content: center; padding-inline: 8px; font-size: 10px; }
+  .curriculum-subject-heading { padding: 11px; }
+  .curriculum-subject-heading h2 { font-size: 15px; }
+  .curriculum-module { padding-inline: 9px; }
+  .curriculum-task { grid-template-columns: 22px minmax(0, 1fr); gap: 7px; }
+  .curriculum-task-status { grid-column: 2; justify-self: start; margin-top: -2px; padding: 3px 5px; }
+  .curriculum-task-copy small { font-size: 8px; }
+  .snapshot-columns { gap: 9px; }
+  .progress-mini { flex-wrap: wrap; gap: 9px 12px; padding: 10px; }
+  .progress-mini-level { min-width: 100%; }
+  .progress-mini-stat { font-size: 8px; }
+}
+
+@media (max-width: 370px) {
+  .curriculum-heading h1 { font-size: 28px; }
+  .curriculum-heading p { max-width: 215px; }
+  .curriculum-count strong { font-size: 17px; }
+  .curriculum-count span { max-width: 58px; text-align: right; }
+  .snapshot-progress-row { gap: 6px; }
+  .snapshot-progress-row > span { font-size: 7px; }
+}

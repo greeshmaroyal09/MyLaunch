@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
+:root {
+  font-family: 'DM Sans', 'Trebuchet MS', sans-serif;
+  color: #9b5e72;
+  background: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  --lavender: #dfc5fe;
+  --plum: #9b5e72;
+  --mint: #98ff98;
+  --white: #fff;
+  --plum-soft: rgba(155, 94, 114, 0.11);
+  --lavender-wash: rgba(223, 197, 254, 0.28);
+  --theme-background: #fff;
+  --theme-surface: #fff;
+  --theme-surface-raised: #fff;
+  --theme-text-primary: #49373e;
+  --theme-text-secondary: #826d75;
+  --theme-border: rgba(155, 94, 114, 0.18);
+  --theme-accent: #9b5e72;
+  --theme-accent-soft: rgba(223, 197, 254, 0.28);
+  --theme-success: #98ff98;
+  --theme-success-soft: rgba(152, 255, 152, 0.3);
+  --theme-input: #fff;
+  --theme-shadow: rgba(80, 43, 57, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--theme-background);
+  color: var(--theme-text-primary);
+}
+
+button { font: inherit; }
+input, select, textarea { color-scheme: inherit; }
+
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 3px;
+}
+
+::selection { color: #49373e; background: #dfc5fe; }
