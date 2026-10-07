@@ -40,7 +40,7 @@ function ApplicationShell() {
   const [activeSection, setActiveSection] = useState<Section>('Home')
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [selectedCareerOpportunityId, setSelectedCareerOpportunityId] = useState<string | null>(null)
-  const { schedule, progress, theme, setTheme, completeTask, skipTask, unskipTask, continueAhead, calendarConfiguration, leaveRecords, schedulesByDate, selectedCalendarDate, inspectDate, markLeave, removeLeave, weeklyTests, projects, companies, opportunities, applications, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication } = useSchedule()
+  const { schedule, progress, theme, setTheme, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, calendarConfiguration, leaveRecords, schedulesByDate, selectedCalendarDate, inspectDate, markLeave, removeLeave, weeklyTests, projects, companies, opportunities, applications, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication } = useSchedule()
   const summary = ScheduleService.getSummary(schedule)
   const isLearningDate = (date: string) => CalendarService.getStatus(date, calendarConfiguration, leaveRecords) === 'LEARNING_DAY'
   const progressSummary = ProgressService.getSummary(progress, schedule.date, isLearningDate)
@@ -135,6 +135,7 @@ function ApplicationShell() {
               onSkipTask={skipTask}
               onUnskipTask={unskipTask}
               onContinueAhead={continueAhead}
+              onNavigateToDate={navigateToDate}
               onViewRoadmap={() => setActiveSection('Roadmaps')}
               weeklyTest={weeklyTestForToday}
               onViewTests={() => setActiveSection('Tests')}

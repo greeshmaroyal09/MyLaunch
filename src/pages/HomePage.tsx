@@ -49,7 +49,7 @@ export function HomePage({ schedule, summary, progressState, progressSummary, on
       <section className="welcome-row" aria-labelledby="welcome-title">
         <div className="welcome-copy">
           <div className="welcome-kicker">YOUR NEXT CHAPTER STARTS HERE</div>
-          <h1 id="welcome-title">Good evening, Greeshma<span>.</span></h1>
+          <h1 id="welcome-title">Hello Greeshma ❤️</h1>
           <p>Ready for today's journey?</p>
         </div>
         <div className="welcome-rule" aria-hidden="true" />

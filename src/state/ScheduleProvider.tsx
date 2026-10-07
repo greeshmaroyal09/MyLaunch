@@ -187,6 +187,29 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  function navigateToDate(date: CalendarDate) {
+    if (!isDateKey(date)) return
+    setState((current) => {
+      if (CalendarService.getStatus(date, current.calendarConfiguration, current.leaveRecords) !== 'LEARNING_DAY') return current
+      const savedSchedule = current.schedulesByDate[date]
+      const schedule = savedSchedule?.calendarStatus === 'LEARNING_DAY'
+        ? reconcileSchedule(savedSchedule, current.progress)
+        : ScheduleService.restoreDate(
+          date,
+          current.progress.taskProgress,
+          current.progress.events,
+          current.calendarConfiguration,
+          current.leaveRecords,
+        ).schedule
+      return {
+        ...current,
+        schedule,
+        selectedCalendarDate: date,
+        schedulesByDate: { ...current.schedulesByDate, [date]: schedule },
+      }
+    })
+  }
+
   function inspectDate(date: CalendarDate) {
     if (!isDateKey(date)) return
     setState((current) => {
@@ -526,7 +549,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ScheduleContext.Provider value={{ ...state, setTheme, completeTask, skipTask, unskipTask, continueAhead, inspectDate, markLeave, removeLeave, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, updateCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication }}>
+    <ScheduleContext.Provider value={{ ...state, setTheme, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, inspectDate, markLeave, removeLeave, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, updateCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication }}>
       {children}
     </ScheduleContext.Provider>
   )

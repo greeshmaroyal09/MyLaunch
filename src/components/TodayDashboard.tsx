@@ -8,7 +8,7 @@ import type { WeeklyTest } from '../domain/weeklyTest'
 import { getCurriculumTasks } from '../data/curriculum'
 import { CalendarService } from '../services/CalendarService'
 import { formatScheduleDate, ScheduleService } from '../services/ScheduleService'
-import { nextDay } from '../services/DateService'
+import { nextDay, previousDay } from '../services/DateService'
 import { ScheduleSummary } from './ScheduleSummary'
 import { TaskList } from './TaskList'
 import { CurriculumSnapshot } from './CurriculumSnapshot'
@@ -29,12 +29,13 @@ type TodayDashboardProps = {
   onSkipTask: (taskId: string, skipType?: SkipType, reason?: string) => void
   onUnskipTask: (taskId: string) => void
   onContinueAhead?: () => void
+  onNavigateToDate: (date: CalendarDate) => void
   onViewRoadmap: () => void
   weeklyTest?: WeeklyTest
   onViewTests: () => void
 }
 
-export function TodayDashboard({ schedule, summary, progressState, progressSummary, progressEvents, schedulesByDate, calendarConfiguration, leaveRecords, onCompleteTask, onSkipTask, onUnskipTask, onContinueAhead, onViewRoadmap, weeklyTest, onViewTests }: TodayDashboardProps) {
+export function TodayDashboard({ schedule, summary, progressState, progressSummary, progressEvents, schedulesByDate, calendarConfiguration, leaveRecords, onCompleteTask, onSkipTask, onUnskipTask, onContinueAhead, onNavigateToDate, onViewRoadmap, weeklyTest, onViewTests }: TodayDashboardProps) {
   const tasks: ScheduledTask[] = schedule.tasks
   const taskTitlesById = Object.fromEntries(getCurriculumTasks().map((task) => [task.id, task.title]))
   const eventMessagesByTaskId: Record<string, string> = Object.fromEntries(progressEvents
@@ -59,6 +60,10 @@ export function TodayDashboard({ schedule, summary, progressState, progressSumma
     cursor = nextDay(cursor)
   }
   const canContinueAhead = schedule.tasks.length > 0 && schedule.tasks.every((task) => task.status === 'Completed')
+  const previousLearningDate = CalendarService.previousLearningDate(previousDay(schedule.date), calendarConfiguration, leaveRecords)
+  const nextLearningDate = CalendarService.nextLearningDate(nextDay(schedule.date), calendarConfiguration, leaveRecords)
+  const canNavigatePrevious = CalendarService.getStatus(previousLearningDate, calendarConfiguration, leaveRecords) === 'LEARNING_DAY'
+  const canNavigateNext = CalendarService.getStatus(nextLearningDate, calendarConfiguration, leaveRecords) === 'LEARNING_DAY'
 
   return (
     <div className="today-dashboard">
@@ -68,9 +73,27 @@ export function TodayDashboard({ schedule, summary, progressState, progressSumma
           <h1>Today's journey</h1>
           <p>A focused set of steps, chosen from your current learning frontier.</p>
         </div>
-        <div className="today-date-card">
+        <div className="planner-date-navigation" aria-label="Planner learning day navigation">
+          <button
+            type="button"
+            className="planner-date-arrow"
+            aria-label="Previous learning day"
+            onClick={() => onNavigateToDate(previousLearningDate)}
+            disabled={!canNavigatePrevious}
+          >
+            ←
+          </button>
           <CalendarDays size={17} aria-hidden="true" />
-          <span>{formatScheduleDate(schedule.date)}</span>
+          <span className="planner-current-date">{formatScheduleDate(schedule.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+          <button
+            type="button"
+            className="planner-date-arrow"
+            aria-label="Next learning day"
+            onClick={() => onNavigateToDate(nextLearningDate)}
+            disabled={!canNavigateNext}
+          >
+            →
+          </button>
         </div>
       </header>
 

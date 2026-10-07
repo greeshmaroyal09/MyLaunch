@@ -44,4 +44,13 @@ export const CalendarService = {
     }
     return startDate
   },
+
+  previousLearningDate(startDate: CalendarDate, configuration: CalendarConfiguration, leaves: LeaveRecord[]): CalendarDate {
+    let candidate = startDate
+    for (let offset = 0; offset < 370; offset += 1) {
+      if (this.getStatus(candidate, configuration, leaves) === 'LEARNING_DAY') return candidate
+      candidate = addDays(candidate, -1)
+    }
+    return startDate
+  },
 }

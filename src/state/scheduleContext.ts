@@ -30,6 +30,7 @@ export type ScheduleContextValue = {
   skipTask: (taskId: string, skipType?: SkipType, reason?: string) => void
   unskipTask: (taskId: string) => void
   continueAhead: () => void
+  navigateToDate: (date: CalendarDate) => void
   inspectDate: (date: CalendarDate) => void
   markLeave: (date: CalendarDate, reason: string) => void
   removeLeave: (date: CalendarDate) => void
