@@ -33,7 +33,7 @@ export function TodayTasks({ schedule, summary, progressState, progressSummary, 
       <div className="home-calendar-strip"><span>{calendarStatusLabel}</span><small>Next learning day · {formatScheduleDate(upcomingLearningDate, { weekday: 'short', month: 'short', day: 'numeric' })}</small></div>
       <ScheduleSummary summary={summary} compact />
       <TaskList tasks={schedule.tasks} compact />
-      <ProgressMiniSummary progress={progressSummary} />
+      <ProgressMiniSummary progress={progressSummary} compact />
       <CurriculumSnapshot schedule={schedule} progressState={progressState} onViewRoadmap={onViewRoadmap} compact />
       <button className="view-today-button" type="button" onClick={onViewToday}>
         Open today's plan <ArrowRight size={14} aria-hidden="true" />

@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 42px;
+  padding: 0 34px;
   border-bottom: 1px solid rgba(155, 94, 114, 0.16);
   background: rgba(255, 255, 255, 0.92);
 }
@@ -41,7 +41,7 @@
   font-size: 15px;
 }
 .mobile-menu-trigger { display: none; }
-.main-content { width: min(100%, 1480px); margin: 0 auto; padding: 32px 42px 64px; }
+.main-content { width: min(100%, 1480px); margin: 0 auto; padding: 32px 34px 64px; }
 
 .placeholder-page {
   min-height: 62vh;
@@ -60,8 +60,8 @@
 
 @media (max-width: 1100px) {
   .workspace { margin-left: 210px; }
-  .topbar { padding-inline: 28px; }
-  .main-content { padding-inline: 28px; }
+  .topbar { padding-inline: 24px; }
+  .main-content { padding-inline: 24px; }
 }
 
 @media (max-width: 760px) {

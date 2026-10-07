@@ -74,7 +74,10 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
       <span className="task-icon"><Icon size={18} strokeWidth={1.8} aria-hidden="true" /></span>
       <span className="task-copy">
         <strong>{task.subject}</strong>
-        <span className="task-title-line">{task.title} <span className="task-type">· {task.type}</span></span>
+        <span className="task-title-line">
+          <span className="task-name">{task.title}</span>
+          <span className={`task-type task-type-${task.type.toLowerCase()}`}>{task.type}</span>
+        </span>
         {task.pairedTaskId && <small className="task-prerequisite">{task.type === 'Learn' ? 'Learn + practice pair' : 'Practice for the paired lesson'}</small>}
         {!compact && prerequisiteTitles.length > 0 && <small className="task-prerequisite">Prerequisite completed: {prerequisiteTitles.join(', ')}</small>}
         {!compact && eventMessage && <small className="task-event-message">{eventMessage}</small>}
