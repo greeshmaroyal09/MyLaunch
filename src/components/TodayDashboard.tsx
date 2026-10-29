@@ -116,7 +116,9 @@ export function TodayDashboard({ schedule, summary, progressState, progressSumma
             <div className="section-eyebrow">SCHEDULED WORK</div>
             <h2 id="today-task-heading">{schedule.calendarStatus === 'LEARNING_DAY' ? "Today's tasks" : 'No learning tasks today'}</h2>
           </div>
-          <span className="available-time"><Clock3 size={14} aria-hidden="true" /> Up to {schedule.availableMinutes} min</span>
+          <span className="available-time" title={`Scheduled workload: ${summary.plannedMinutes} min. Daily capacity ceiling: ${schedule.availableMinutes} min.`}>
+            <Clock3 size={14} aria-hidden="true" /> {summary.plannedMinutes} min scheduled · Max {schedule.availableMinutes} min
+          </span>
         </div>
         <p className="today-dashboard-date">{formatScheduleDate(schedule.date, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         <TaskList tasks={tasks} onComplete={onCompleteTask} onSkip={onSkipTask} onUnskip={onUnskipTask} taskTitlesById={taskTitlesById} eventMessagesByTaskId={eventMessagesByTaskId} />

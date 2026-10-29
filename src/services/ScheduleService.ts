@@ -7,7 +7,7 @@ import type { ProgressEvent, SkipType } from '../domain/progress'
 import type { ScheduledTask, TaskProgressStatus } from '../domain/task'
 import { CalendarService } from './CalendarService'
 import { formatDate, getTodayDate } from './DateService'
-import { RuleBasedScheduler } from './RuleBasedScheduler'
+import { RuleBasedScheduler, sortScheduledTasks } from './RuleBasedScheduler'
 
 const scheduler = new RuleBasedScheduler()
 const dailyLimitMinutes = 100
@@ -72,11 +72,12 @@ export const ScheduleService = {
       calendarStatus,
     )
     const eventIds = new Set(excludedTaskIds)
+    const unsortedTasks = [...completedRows, ...generated.schedule.tasks.filter((task) => !eventIds.has(task.id)), ...skippedRows]
     return {
       progressState: generated.progressState,
       schedule: {
         ...generated.schedule,
-        tasks: [...completedRows, ...generated.schedule.tasks.filter((task) => !eventIds.has(task.id)), ...skippedRows],
+        tasks: sortScheduledTasks(unsortedTasks),
       },
     }
   },
@@ -87,14 +88,71 @@ export const ScheduleService = {
       return { schedule, progressState }
     }
 
-    const updatedProgress = deriveProgressState(curriculum, { ...progressState, [taskId]: 'COMPLETED' })
-    const tasks = schedule.tasks.map((task) => task.id === taskId
-      ? { ...task, status: 'Completed' as const, progressStatus: 'COMPLETED' as const }
-      : task)
+    // Do not allow an incomplete prerequisite to be bypassed
+    const isPrereqComplete = (id: string) => progressState[id] === 'COMPLETED'
+    if (!taskToComplete.prerequisiteTaskIds.every(isPrereqComplete)) {
+      return { schedule, progressState }
+    }
+
+    const nextCompleted = { ...progressState, [taskId]: 'COMPLETED' as const }
+    const updatedProgress = deriveProgressState(curriculum, nextCompleted)
+
+    // Mark task completed and unlock any successor task in schedule.tasks whose prerequisites are now complete
+    const tasks = schedule.tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, status: 'Completed' as const, progressStatus: 'COMPLETED' as const }
+      }
+      if (task.status === 'Pending') {
+        const allDone = task.prerequisiteTaskIds.every((id) => id === taskId || nextCompleted[id] === 'COMPLETED')
+        if (allDone && task.progressStatus === 'LOCKED') {
+          return { ...task, progressStatus: 'IN_PROGRESS' as const }
+        }
+      }
+      return task
+    })
+
+    for (const task of tasks) {
+      if (task.status === 'Pending' && task.progressStatus === 'IN_PROGRESS') {
+        updatedProgress[task.id] = 'IN_PROGRESS'
+      }
+    }
 
     return {
       progressState: updatedProgress,
-      schedule: { ...schedule, tasks },
+      schedule: { ...schedule, tasks: sortScheduledTasks(tasks) },
+    }
+  },
+
+  uncompleteTask(schedule: DailySchedule, progressState: TaskProgressMap, taskId: string): ScheduleResult {
+    const taskToUncomplete = schedule.tasks.find((task) => task.id === taskId)
+    if (!taskToUncomplete || taskToUncomplete.status !== 'Completed' || schedule.calendarStatus !== 'LEARNING_DAY') {
+      return { schedule, progressState }
+    }
+
+    const nextProgress = { ...progressState, [taskId]: 'AVAILABLE' as const }
+    const updatedProgress = deriveProgressState(curriculum, nextProgress)
+    const isCompleted = (id: string) => updatedProgress[id] === 'COMPLETED'
+
+    const tasks = schedule.tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, status: 'Pending' as const, progressStatus: 'IN_PROGRESS' as const }
+      }
+      if (task.status === 'Pending') {
+        const allDone = task.prerequisiteTaskIds.every(isCompleted)
+        return { ...task, progressStatus: allDone ? ('IN_PROGRESS' as const) : ('LOCKED' as const) }
+      }
+      return task
+    })
+
+    for (const task of tasks) {
+      if (task.status === 'Pending') {
+        updatedProgress[task.id] = task.progressStatus
+      }
+    }
+
+    return {
+      progressState: updatedProgress,
+      schedule: { ...schedule, tasks: sortScheduledTasks(tasks) },
     }
   },
 
@@ -206,13 +264,21 @@ function generateSchedule(
     excludedTaskIds,
   })
   const updatedProgress = { ...progressState }
-  for (const task of schedule.tasks) updatedProgress[task.id] = 'IN_PROGRESS'
+  for (const task of schedule.tasks) {
+    if (task.progressStatus !== 'LOCKED') {
+      updatedProgress[task.id] = 'IN_PROGRESS'
+    } else {
+      updatedProgress[task.id] = 'LOCKED'
+    }
+  }
 
   return {
     schedule: { ...schedule, availableMinutes: dailyLimitMinutes, calendarStatus },
     progressState: updatedProgress,
   }
 }
+
+export { sortScheduledTasks } from './RuleBasedScheduler'
 
 export function deriveProgressState(source: Curriculum, currentProgress: TaskProgressMap = {}): TaskProgressMap {
   const allTasks = source.subjects.flatMap((subject) =>

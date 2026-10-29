@@ -8,7 +8,7 @@ import type { Opportunity } from '../domain/opportunity'
 import type { CalendarDate } from '../domain/calendar'
 import type { DailySchedule } from '../domain/dailySchedule'
 import type { ProgressState, SkipType } from '../domain/progress'
-import type { TaskProgressStatus, TaskStatus } from '../domain/task'
+import type { ScheduledTask, TaskProgressStatus, TaskStatus } from '../domain/task'
 import type { Project, ProjectMilestone, ProjectTask } from '../domain/project'
 import type { WeeklyTest } from '../domain/weeklyTest'
 import { ApplicationService } from '../services/ApplicationService'
@@ -17,7 +17,7 @@ import { compareDates, getTodayDate, isDateKey, nextDay } from '../services/Date
 import { ProgressService, createProgressState } from '../services/ProgressService'
 import { OpportunityService } from '../services/OpportunityService'
 import { ProjectService } from '../services/ProjectService'
-import { ScheduleService } from '../services/ScheduleService'
+import { ScheduleService, sortScheduledTasks } from '../services/ScheduleService'
 import { StorageService } from '../services/StorageService'
 import { WeeklyTestService } from '../services/WeeklyTestService'
 import { ScheduleContext } from './scheduleContext'
@@ -74,14 +74,12 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       if (taskProgressStatus === 'COMPLETED') {
         const progress = ProgressService.uncompleteTask(current.progress, taskId)
         if (progress === current.progress) return current
-        const progressState = ScheduleService.getProgressState(curriculum, {
-          ...progress.taskProgress,
-          [taskId]: 'IN_PROGRESS',
-        })
-        const schedule = updateTaskInSchedule(current.schedule, taskId, 'Pending', progressState[taskId])
+        const next = ScheduleService.uncompleteTask(current.schedule, current.progress.taskProgress, taskId)
+        const progressState = ScheduleService.getProgressState(curriculum, next.progressState)
+        const schedule = next.schedule
         const schedulesByDate = Object.fromEntries(Object.entries(current.schedulesByDate).map(([date, savedSchedule]) => [
           date,
-          updateTaskInSchedule(savedSchedule, taskId, 'Pending', progressState[taskId]),
+          date === current.schedule.date ? schedule : reconcileSchedule(savedSchedule, { ...progress, taskProgress: progressState }),
         ]))
         return {
           ...current,
@@ -113,12 +111,16 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       if (completion === current.progress) return current
       const next = ScheduleService.completeTask(current.schedule, current.progress.taskProgress, taskId)
       const progressState = ScheduleService.getProgressState(curriculum, completion.taskProgress)
-      const schedule = updateTaskInSchedule(next.schedule, taskId, 'Completed', 'COMPLETED')
+      const mergedProgressState = { ...progressState }
+      for (const [tId, status] of Object.entries(next.progressState)) {
+        if (status === 'IN_PROGRESS') mergedProgressState[tId] = 'IN_PROGRESS'
+      }
+      const schedule = next.schedule
       const schedulesByDate = Object.fromEntries(Object.entries(current.schedulesByDate).map(([date, savedSchedule]) => [
         date,
-        updateTaskInSchedule(savedSchedule, taskId, 'Completed', 'COMPLETED'),
+        date === current.schedule.date ? schedule : updateTaskInSchedule(savedSchedule, taskId, 'Completed', 'COMPLETED'),
       ]))
-      const updatedProgress = { ...completion, taskProgress: progressState }
+      const updatedProgress = { ...completion, taskProgress: mergedProgressState }
       const weeklyTests = WeeklyTestService.ensureTest({
         date: current.schedule.date,
         events: updatedProgress.events,
@@ -629,24 +631,40 @@ function reconcileSchedule(schedule: DailySchedule, progress: ProgressState): Da
     .filter((event) => event.type === 'TASK_COMPLETED' && compareDates(event.date, schedule.date) < 0)
     .map((event) => event.taskId))
   const skippedIds = new Set(progress.events.filter((event) => event.type === 'TASK_SKIPPED' && event.date === schedule.date).map((event) => event.taskId))
+  const isCompleted = (id: string) => progress.taskProgress[id] === 'COMPLETED' || completedOnDate.has(id)
+
+  const tasks: ScheduledTask[] = schedule.tasks.flatMap((task): ScheduledTask[] => {
+    if (completedBeforeDate.has(task.id)) return []
+    if (completedOnDate.has(task.id) || task.status === 'Completed') {
+      return [{ ...task, status: 'Completed', progressStatus: 'COMPLETED' }]
+    }
+    if (skippedIds.has(task.id)) return [{ ...task, status: 'Skipped', progressStatus: 'AVAILABLE' }]
+    const allPrereqsComplete = task.prerequisiteTaskIds.every(isCompleted)
+    return [{
+      ...task,
+      status: 'Pending',
+      progressStatus: allPrereqsComplete ? 'IN_PROGRESS' : 'LOCKED',
+    }]
+  })
+
   return {
     ...schedule,
-    tasks: schedule.tasks.flatMap((task) => {
-      if (completedBeforeDate.has(task.id)) return []
-      if (completedOnDate.has(task.id) || task.status === 'Completed') {
-        return [{ ...task, status: 'Completed' as const, progressStatus: 'COMPLETED' as const }]
-      }
-      if (skippedIds.has(task.id)) return [{ ...task, status: 'Skipped', progressStatus: 'AVAILABLE' }]
-      return [task]
-    }),
+    tasks: sortScheduledTasks(tasks),
   }
 }
 
 function reconcileProgressMap(progress: ProgressState['taskProgress'], schedule: DailySchedule): ProgressState['taskProgress'] {
   const reconciled = { ...progress }
   for (const task of schedule.tasks) {
-    if (task.status === 'Completed') reconciled[task.id] = 'COMPLETED'
-    else if (task.status === 'Pending' && reconciled[task.id] !== 'COMPLETED') reconciled[task.id] = 'IN_PROGRESS'
+    if (task.status === 'Completed') {
+      reconciled[task.id] = 'COMPLETED'
+    } else if (task.status === 'Pending') {
+      if (task.progressStatus === 'LOCKED') {
+        reconciled[task.id] = 'LOCKED'
+      } else if (reconciled[task.id] !== 'COMPLETED') {
+        reconciled[task.id] = 'IN_PROGRESS'
+      }
+    }
   }
   return reconciled
 }

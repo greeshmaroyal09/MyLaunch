@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookOpenText, Check, Circle, Code2, Coffee, Database, ExternalLink, Puzzle, SkipForward } from 'lucide-react'
+import { BookOpenText, Check, Circle, Code2, Coffee, Database, ExternalLink, LockKeyhole, Puzzle, SkipForward } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { PracticeResource, ScheduledTask, SkipType } from '../domain/task'
 
@@ -56,10 +56,14 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
   const Icon = subjectIcons[task.subject] ?? BookOpenText
   const completed = task.status === 'Completed'
   const skipped = task.status === 'Skipped'
+  const isLocked = task.status === 'Pending' && task.progressStatus === 'LOCKED'
   const [skipType, setSkipType] = useState<SkipType>('UNEXCUSED')
   const [reason, setReason] = useState('')
   const [skipMenuOpen, setSkipMenuOpen] = useState(false)
   const skipLabel = task.skipType === 'EXCUSED' ? 'Excused skip' : 'Unexcused skip'
+  const lockMessage = prerequisiteTitles.length > 0
+    ? `Complete ${prerequisiteTitles.join(', ')} first`
+    : 'Complete prerequisite first'
 
   const submitSkip = () => {
     const trimmedReason = skipType === 'EXCUSED' ? reason.trim() : ''
@@ -70,7 +74,7 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
   }
 
   return (
-    <li className={`task-row${completed ? ' task-row-completed' : ''}${skipped ? ' task-row-skipped' : ''}${compact ? ' task-row-compact' : ''}`}>
+    <li className={`task-row${completed ? ' task-row-completed' : ''}${skipped ? ' task-row-skipped' : ''}${isLocked ? ' task-row-locked' : ''}${compact ? ' task-row-compact' : ''}`}>
       <span className="task-icon"><Icon size={18} strokeWidth={1.8} aria-hidden="true" /></span>
       <span className="task-copy">
         <strong>{task.subject}</strong>
@@ -78,8 +82,9 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
           <span className="task-name">{task.title}</span>
           <span className={`task-type task-type-${task.type.toLowerCase()}`}>{task.type}</span>
         </span>
-        {task.pairedTaskId && <small className="task-prerequisite">{task.type === 'Learn' ? 'Learn + practice pair' : 'Practice for the paired lesson'}</small>}
-        {!compact && prerequisiteTitles.length > 0 && <small className="task-prerequisite">Prerequisite completed: {prerequisiteTitles.join(', ')}</small>}
+        {isLocked && <small className="task-locked-notice"><LockKeyhole size={10} aria-hidden="true" /> Locked · {lockMessage}</small>}
+        {!isLocked && task.pairedTaskId && <small className="task-prerequisite">{task.type === 'Learn' ? 'Learn + practice pair' : 'Practice for the paired lesson'}</small>}
+        {!compact && !isLocked && prerequisiteTitles.length > 0 && <small className="task-prerequisite">Prerequisite completed: {prerequisiteTitles.join(', ')}</small>}
         {!compact && eventMessage && <small className="task-event-message">{eventMessage}</small>}
         {!compact && skipped && task.skipReason && <small className="task-event-message">Reason: {task.skipReason}</small>}
         {!compact && skipped && <small className="task-event-message">{skipLabel}</small>}
@@ -87,8 +92,8 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
       </span>
       <span className="task-reward"><strong>{task.estimatedMinutes} min</strong><small>{skipped ? (task.skipType === 'EXCUSED' ? 'Excused skip' : '-10 pts / XP') : `+${task.estimatedMinutes} pts / XP`}</small></span>
       {compact ? (
-        <span className={`task-status-dot${completed ? ' is-completed' : ''}${skipped ? ' is-skipped' : ''}`} aria-label={task.status} title={task.status}>
-          {completed ? <Check size={11} aria-hidden="true" /> : skipped ? <SkipForward size={11} aria-hidden="true" /> : <Circle size={8} aria-hidden="true" />}
+        <span className={`task-status-dot${completed ? ' is-completed' : ''}${skipped ? ' is-skipped' : ''}${isLocked ? ' is-locked' : ''}`} aria-label={isLocked ? 'Locked' : task.status} title={isLocked ? `Locked · ${lockMessage}` : task.status}>
+          {completed ? <Check size={11} aria-hidden="true" /> : skipped ? <SkipForward size={11} aria-hidden="true" /> : isLocked ? <LockKeyhole size={10} aria-hidden="true" /> : <Circle size={8} aria-hidden="true" />}
         </span>
       ) : (
         skipped ? (
@@ -99,20 +104,21 @@ export function TaskItem({ task, onComplete, onSkip, onUnskip, compact = false, 
         ) : (
           <span className="task-actions">
             <button
-              className={`task-complete${completed ? ' is-completed' : ''}`}
+              className={`task-complete${completed ? ' is-completed' : ''}${isLocked ? ' is-locked' : ''}`}
               type="button"
-              aria-label={completed ? `Mark ${task.title} unfinished` : `Complete ${task.title}, earn ${task.estimatedMinutes} points and XP`}
-              title={completed ? 'Mark unfinished' : `Earn ${task.estimatedMinutes} points and XP`}
-              disabled={(task.status !== 'Pending' && !completed) || !onComplete}
+              aria-label={completed ? `Mark ${task.title} unfinished` : isLocked ? `Locked · ${lockMessage}` : `Complete ${task.title}, earn ${task.estimatedMinutes} points and XP`}
+              title={completed ? 'Mark unfinished' : isLocked ? lockMessage : `Earn ${task.estimatedMinutes} points and XP`}
+              disabled={(task.status !== 'Pending' && !completed) || isLocked || !onComplete}
               onClick={() => onComplete?.(task.id)}
             >
-              {completed ? <Check size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
+              {completed ? <Check size={16} aria-hidden="true" /> : isLocked ? <LockKeyhole size={14} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
             </button>
             <button
               className="task-skip"
               type="button"
               aria-label={`Skip ${task.title}`}
-              disabled={task.status !== 'Pending' || !onSkip}
+              title={isLocked ? 'Cannot skip locked task' : undefined}
+              disabled={task.status !== 'Pending' || isLocked || !onSkip}
               onClick={() => setSkipMenuOpen((open) => !open)}
             >
               <SkipForward size={14} aria-hidden="true" />

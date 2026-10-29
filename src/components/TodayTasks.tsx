@@ -1,3 +1,4 @@
+import { getCurriculumTasks } from '../data/curriculum'
 import { ArrowRight } from 'lucide-react'
 import type { DailySchedule, ScheduleSummary as ScheduleSummaryData } from '../domain/dailySchedule'
 import type { TaskProgressMap } from '../domain/curriculum'
@@ -22,6 +23,7 @@ type TodayTasksProps = {
 }
 
 export function TodayTasks({ schedule, summary, progressState, progressSummary, onViewToday, onViewRoadmap, calendarStatusLabel, upcomingLearningDate }: TodayTasksProps) {
+  const taskTitlesById = Object.fromEntries(getCurriculumTasks().map((task) => [task.id, task.title]))
   return (
     <section className="today-panel" aria-labelledby="today-title">
       <div className="section-eyebrow">{formatScheduleDate(schedule.date, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase()}</div>
@@ -32,7 +34,7 @@ export function TodayTasks({ schedule, summary, progressState, progressSummary, 
       <p className="today-intro">From your current learning frontier.</p>
       <div className="home-calendar-strip"><span>{calendarStatusLabel}</span><small>Next learning day · {formatScheduleDate(upcomingLearningDate, { weekday: 'short', month: 'short', day: 'numeric' })}</small></div>
       <ScheduleSummary summary={summary} compact />
-      <TaskList tasks={schedule.tasks} compact />
+      <TaskList tasks={schedule.tasks} compact taskTitlesById={taskTitlesById} />
       <ProgressMiniSummary progress={progressSummary} compact />
       <CurriculumSnapshot schedule={schedule} progressState={progressState} onViewRoadmap={onViewRoadmap} compact />
       <button className="view-today-button" type="button" onClick={onViewToday}>

@@ -14,11 +14,31 @@
 .summary-stat span { color: rgba(155, 94, 114, 0.72); font-size: 11px; font-weight: 600; }
 .summary-stat strong { color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 500; }
 .today-task-section { padding: 21px 22px 17px; border: 1px solid rgba(155, 94, 114, 0.18); background: rgba(255, 255, 255, 0.88); }
-.today-task-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.today-task-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; }
 .today-task-heading h2 { margin: 5px 0 0; color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 26px; font-weight: 500; }
 .available-time { display: flex; align-items: center; gap: 6px; color: rgba(155, 94, 114, 0.78); font-size: 12px; }
 .today-dashboard-date { margin-top: 7px; color: rgba(155, 94, 114, 0.7); font-size: 12px; }
 .schedule-footnote { margin-top: 14px; padding-top: 11px; border-top: 1px solid rgba(155, 94, 114, 0.13); color: rgba(155, 94, 114, 0.66); font-size: 10px; }
+.continue-ahead-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 20px;
+  border: 1px solid #9b5e72;
+  border-radius: 4px;
+  background: #9b5e72;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+.continue-ahead-button:hover { background: #7f495b; }
+.continue-ahead-button:active { transform: translateY(1px); }
 .today-calendar-message { margin: 0 0 16px; padding: 12px 14px; border-left: 3px solid #dfc5fe; background: rgba(223, 197, 254, 0.2); color: #9b5e72; }
 .today-calendar-message > span { font-size: 12px; font-weight: 700; }
 .today-calendar-message p { margin-top: 4px; color: rgba(155, 94, 114, 0.82); font-size: 12px; line-height: 1.5; }
@@ -61,6 +81,7 @@
   .today-task-section { padding: 17px 13px 13px; }
   .today-task-heading h2 { font-size: 23px; }
   .available-time { font-size: 11px; }
+  .continue-ahead-button { width: 100%; min-height: 44px; font-size: 13px; margin-top: 14px; }
   .today-task-section .task-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: start; gap: 7px; padding: 11px 0; }
   .today-task-section .task-icon { grid-column: 1; grid-row: 1 / span 2; margin-top: 2px; }
   .today-task-section .task-copy { grid-column: 2 / 4; grid-row: 1; }
