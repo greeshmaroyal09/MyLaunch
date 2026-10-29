@@ -218,15 +218,20 @@ export function deriveProgressState(source: Curriculum, currentProgress: TaskPro
   const allTasks = source.subjects.flatMap((subject) =>
     subject.modules.flatMap((module) => module.topics.flatMap((topic) => topic.tasks)),
   )
+  const isCompleted = (task: (typeof allTasks)[number]): boolean => {
+    if (currentProgress[task.id] === 'COMPLETED') return true
+    if (task.legacyTaskIds?.some((legacyId) => currentProgress[legacyId] === 'COMPLETED')) return true
+    return false
+  }
   const completed = new Set(
-    allTasks.filter((task) => currentProgress[task.id] === 'COMPLETED').map((task) => task.id),
+    allTasks.filter(isCompleted).map((task) => task.id),
   )
 
   return Object.fromEntries(allTasks.map((task) => {
     if (completed.has(task.id)) return [task.id, 'COMPLETED' satisfies TaskProgressStatus]
     const prerequisitesComplete = task.prerequisiteTaskIds.every((id) => completed.has(id))
     if (!prerequisitesComplete) return [task.id, 'LOCKED' satisfies TaskProgressStatus]
-    const previous = currentProgress[task.id]
+    const previous = currentProgress[task.id] ?? (task.legacyTaskIds?.map((id) => currentProgress[id]).find(Boolean))
     return [task.id, previous === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'AVAILABLE']
   }))
 }

@@ -28,6 +28,7 @@ type SubjectSeed = {
   module: string
   topics?: TopicSeed[]
   pairedTopics?: PairedTopicSeed[]
+  prerequisiteTaskId?: string
 }
 
 function makeResource(
@@ -51,7 +52,7 @@ function makeResource(
 }
 
 function buildSingleTopicSubject(seed: SubjectSeed, subjectOrder: number): Subject {
-  let previousTaskId: string | undefined
+  let previousTaskId: string | undefined = seed.prerequisiteTaskId
   const topics: Topic[] = (seed.topics ?? []).map((topicSeed, topicIndex) => {
     const taskId = `${seed.id}-task-${String(topicIndex + 1).padStart(2, '0')}`
     const topicId = `${seed.id}-topic-${String(topicIndex + 1).padStart(2, '0')}`
@@ -99,7 +100,7 @@ function buildSingleTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
 }
 
 function buildPairedTopicSubject(seed: SubjectSeed, subjectOrder: number): Subject {
-  let previousTaskId: string | undefined
+  let previousTaskId: string | undefined = seed.prerequisiteTaskId
   const topics: Topic[] = (seed.pairedTopics ?? []).map((pair, topicIndex) => {
     const topicId = `${seed.id}-topic-${String(topicIndex + 1).padStart(2, '0')}`
     const learnId = `${seed.id}-${pair.key}-learn`
@@ -140,6 +141,7 @@ function buildPairedTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
       dueOffsetDays: 0,
       prerequisiteTaskIds: [learnId],
       pairedTaskId: learnId,
+      legacyTaskIds: pair.legacyTaskId ? [pair.legacyTaskId] : undefined,
       practiceResources: pair.practiceResources ?? pair.learnResources,
       prerequisiteRelationships: [{ taskId: learnId, relationship: 'required-before' }],
     }
@@ -198,6 +200,7 @@ const subjectSeeds: SubjectSeed[] = [
     id: 'dsa',
     name: 'DSA',
     track: 'Primary',
+    prerequisiteTaskId: 'java-strings-practice',
     module: 'DSA 2.01 — Arrays, Strings, Search & Sort',
     pairedTopics: [
       { key: 'complexity', learnTitle: 'Complexity Basics', practiceTitle: 'Complexity Practice', description: 'Estimate time and space complexity with Big O.', learnMinutes: 25, practiceMinutes: 20, learnResources: [makeResource('Big O Cheat Sheet', 'https://www.bigocheatsheet.com/', 'Other reputable source', 'Reference', 'LEARN', { subject: 'DSA', topic: 'Complexity Basics' })], practiceResources: [makeResource('Two Sum', 'https://leetcode.com/problems/two-sum/', 'LeetCode', 'Practice Problem', 'PRACTICE', { subject: 'DSA', topic: 'Complexity Basics' })], legacyTaskId: 'dsa-task-01' },
@@ -215,6 +218,7 @@ const subjectSeeds: SubjectSeed[] = [
     id: 'sql',
     name: 'SQL',
     track: 'Primary',
+    prerequisiteTaskId: 'java-exceptions-practice',
     module: 'SQL — Joins + Multi-Table Queries',
     pairedTopics: [
       { key: 'select-where', learnTitle: 'SELECT / WHERE', practiceTitle: 'SELECT / WHERE Practice', description: 'Select columns and filter rows with predicates.', learnMinutes: 20, practiceMinutes: 20, learnResources: [makeResource('SQL SELECT', 'https://www.w3schools.com/sql/sql_select.asp', 'SQL reference/practice', 'Documentation', 'LEARN', { subject: 'SQL', topic: 'SELECT / WHERE' })], practiceResources: [makeResource('SQL WHERE practice', 'https://www.hackerrank.com/domains/sql', 'HackerRank', 'Practice Problem', 'PRACTICE', { subject: 'SQL', topic: 'SELECT / WHERE' })], legacyTaskId: 'sql-task-01' },
@@ -224,28 +228,72 @@ const subjectSeeds: SubjectSeed[] = [
     ],
   },
   {
-    id: 'dbms', name: 'DBMS', track: 'Primary', module: 'DBMS — Relational Design & Transactions', topics: [
+    id: 'dbms',
+    name: 'DBMS',
+    track: 'Primary',
+    prerequisiteTaskId: 'sql-subqueries-practice',
+    module: 'DBMS — Relational Design & Transactions',
+    topics: [
       { title: 'Relational Model', type: 'Learn', minutes: 25, description: 'Understand relations, keys, and integrity constraints.' },
       { title: 'Normalization', type: 'Learn', minutes: 30, description: 'Reason about functional dependencies and normal forms.' },
       { title: 'Transactions & ACID', type: 'Revision', minutes: 25, description: 'Review transaction guarantees and isolation basics.' },
     ],
   },
   {
-    id: 'operating-systems', name: 'Operating Systems', track: 'Primary', module: 'Operating System Concepts', topics: [
+    id: 'git-github',
+    name: 'Git/GitHub',
+    track: 'Primary',
+    prerequisiteTaskId: 'java-strings-practice',
+    module: 'Version Control',
+    topics: [
+      { title: 'Git Basics', type: 'Learn', minutes: 20, description: 'Track changes with repositories, commits, and status.' },
+      { title: 'Branches & Merges', type: 'Practice', minutes: 25, description: 'Work with branches and resolve a simple merge.' },
+      { title: 'GitHub Collaboration', type: 'Practice', minutes: 25, description: 'Use remotes and pull requests in a shared workflow.' },
+    ],
+  },
+  {
+    id: 'operating-systems',
+    name: 'Operating Systems',
+    track: 'Primary',
+    prerequisiteTaskId: 'dsa-stacksqueues-practice',
+    module: 'Operating System Concepts',
+    topics: [
       { title: 'Processes & Threads', type: 'Learn', minutes: 30, description: 'Compare processes, threads, and their execution state.' },
       { title: 'Scheduling & Concurrency', type: 'Practice', minutes: 30, description: 'Explore scheduling and synchronization fundamentals.' },
       { title: 'Memory Management', type: 'Learn', minutes: 30, description: 'Study virtual memory, paging, and address translation.' },
     ],
   },
   {
-    id: 'computer-networks', name: 'Computer Networks', track: 'Primary', module: 'Network Foundations', topics: [
+    id: 'computer-networks',
+    name: 'Computer Networks',
+    track: 'Primary',
+    prerequisiteTaskId: 'operating-systems-task-03',
+    module: 'Network Foundations',
+    topics: [
       { title: 'Network Layers', type: 'Learn', minutes: 25, description: 'Map common protocols to network layers.' },
       { title: 'TCP and UDP', type: 'Revision', minutes: 25, description: 'Compare transport protocols and their trade-offs.' },
       { title: 'HTTP & DNS', type: 'Learn', minutes: 30, description: 'Trace a web request through DNS and HTTP.' },
     ],
   },
   {
-    id: 'backend-development', name: 'Backend Development', track: 'Primary', module: 'Backend 9.01 — REST APIs + Spring Boot', topics: [
+    id: 'oop',
+    name: 'OOP',
+    track: 'Primary',
+    prerequisiteTaskId: 'java-exceptions-practice',
+    module: 'Object-Oriented Design',
+    topics: [
+      { title: 'Encapsulation & Abstraction', type: 'Learn', minutes: 25, description: 'Design clear object boundaries and public contracts.' },
+      { title: 'Inheritance & Composition', type: 'Revision', minutes: 25, description: 'Choose composition or inheritance for a design.' },
+      { title: 'Polymorphism & Interfaces', type: 'Practice', minutes: 30, description: 'Use interfaces to separate behavior from implementation.' },
+    ],
+  },
+  {
+    id: 'backend-development',
+    name: 'Backend Development',
+    track: 'Primary',
+    prerequisiteTaskId: 'dbms-task-03',
+    module: 'Backend 9.01 — REST APIs + Spring Boot',
+    topics: [
       { title: 'HTTP & REST', type: 'Learn', minutes: 30, description: 'Design resource-oriented API endpoints and request flow.' },
       { title: 'Validation & Errors', type: 'Practice', minutes: 30, description: 'Validate input and return consistent errors.' },
       { title: 'Spring Boot Foundations', type: 'Learn', minutes: 35, description: 'Understand controllers, services, dependency injection, and application wiring.' },
@@ -253,73 +301,104 @@ const subjectSeeds: SubjectSeed[] = [
     ],
   },
   {
-    id: 'git-github', name: 'Git/GitHub', track: 'Primary', module: 'Version Control', topics: [
-      { title: 'Git Basics', type: 'Learn', minutes: 20, description: 'Track changes with repositories, commits, and status.' },
-      { title: 'Branches & Merges', type: 'Practice', minutes: 25, description: 'Work with branches and resolve a simple merge.' },
-      { title: 'GitHub Collaboration', type: 'Practice', minutes: 25, description: 'Use remotes and pull requests in a shared workflow.' },
-    ],
-  },
-  {
-    id: 'oop', name: 'OOP', track: 'Primary', module: 'Object-Oriented Design', topics: [
-      { title: 'Encapsulation & Abstraction', type: 'Learn', minutes: 25, description: 'Design clear object boundaries and public contracts.' },
-      { title: 'Inheritance & Composition', type: 'Revision', minutes: 25, description: 'Choose composition or inheritance for a design.' },
-      { title: 'Polymorphism & Interfaces', type: 'Practice', minutes: 30, description: 'Use interfaces to separate behavior from implementation.' },
-    ],
-  },
-  {
-    id: 'system-design', name: 'System Design Fundamentals', track: 'Primary', module: 'System Design Foundations', topics: [
+    id: 'system-design',
+    name: 'System Design Fundamentals',
+    track: 'Primary',
+    prerequisiteTaskId: 'backend-development-task-04',
+    module: 'System Design Foundations',
+    topics: [
       { title: 'Requirements & Estimation', type: 'Learn', minutes: 30, description: 'Clarify requirements and estimate basic system load.' },
       { title: 'APIs & Data Modeling', type: 'Practice', minutes: 30, description: 'Sketch API contracts and a simple data model.' },
       { title: 'Caching & Scaling Basics', type: 'Learn', minutes: 35, description: 'Explore caching, bottlenecks, and horizontal scaling.' },
     ],
   },
   {
-    id: 'python', name: 'Python', track: 'AI / ML', module: 'Python 7 — Practical Scripting', topics: [
+    id: 'python',
+    name: 'Python',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'java-strings-practice',
+    module: 'Python 7 — Practical Scripting',
+    topics: [
       { title: 'Python Basics', type: 'Learn', minutes: 25, description: 'Review core syntax, values, and built-in data types.' },
       { title: 'Functions & Collections', type: 'Practice', minutes: 30, description: 'Write functions that transform common collections.' },
       { title: 'Modules & Environments', type: 'Practice', minutes: 25, description: 'Organize code and work with project environments.' },
     ],
   },
   {
-    id: 'numpy-pandas', name: 'NumPy/Pandas', track: 'AI / ML', module: 'Data Analysis Tools', topics: [
+    id: 'numpy-pandas',
+    name: 'NumPy/Pandas',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'python-task-03',
+    module: 'Data Analysis Tools',
+    topics: [
       { title: 'NumPy Arrays', type: 'Learn', minutes: 30, description: 'Create arrays and use vectorized operations.' },
       { title: 'Pandas DataFrames', type: 'Practice', minutes: 30, description: 'Load, inspect, and transform tabular data.' },
       { title: 'Cleaning & Summaries', type: 'Problem Solving', minutes: 30, description: 'Clean missing values and produce grouped summaries.' },
     ],
   },
   {
-    id: 'machine-learning', name: 'Machine Learning', track: 'AI / ML', module: 'Machine Learning Fundamentals', topics: [
+    id: 'machine-learning',
+    name: 'Machine Learning',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'numpy-pandas-task-03',
+    module: 'Machine Learning Fundamentals',
+    topics: [
       { title: 'Learning Problem Types', type: 'Learn', minutes: 30, description: 'Distinguish supervised and unsupervised learning.' },
       { title: 'Features & Evaluation', type: 'Learn', minutes: 30, description: 'Prepare features and choose basic evaluation measures.' },
       { title: 'Baseline Model Practice', type: 'Practice', minutes: 35, description: 'Train and evaluate a simple baseline model.' },
     ],
   },
   {
-    id: 'nlp', name: 'NLP', track: 'AI / ML', module: 'Natural Language Processing', topics: [
+    id: 'nlp',
+    name: 'NLP',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'machine-learning-task-03',
+    module: 'Natural Language Processing',
+    topics: [
       { title: 'Text Preprocessing', type: 'Learn', minutes: 25, description: 'Normalize and tokenize text for analysis.' },
       { title: 'Text Representations', type: 'Learn', minutes: 30, description: 'Compare sparse and embedding-based representations.' },
     ],
   },
   {
-    id: 'llm-fundamentals', name: 'LLM Fundamentals', track: 'AI / ML', module: 'Large Language Models', topics: [
+    id: 'llm-fundamentals',
+    name: 'LLM Fundamentals',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'nlp-task-02',
+    module: 'Large Language Models',
+    topics: [
       { title: 'Tokens & Context Windows', type: 'Learn', minutes: 25, description: 'Understand tokenization and context limits.' },
       { title: 'Prompting & Model Limits', type: 'Practice', minutes: 30, description: 'Evaluate prompts and recognize model limitations.' },
     ],
   },
   {
-    id: 'rag', name: 'RAG', track: 'AI / ML', module: 'Retrieval-Augmented Generation', topics: [
+    id: 'rag',
+    name: 'RAG',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'llm-fundamentals-task-02',
+    module: 'Retrieval-Augmented Generation',
+    topics: [
       { title: 'Retrieval Pipeline', type: 'Learn', minutes: 30, description: 'Trace chunking, retrieval, and grounded generation.' },
       { title: 'RAG Evaluation', type: 'Practice', minutes: 30, description: 'Inspect retrieval quality and answer grounding.' },
     ],
   },
   {
-    id: 'fastapi', name: 'FastAPI', track: 'AI / ML', module: 'FastAPI Foundations', topics: [
+    id: 'fastapi',
+    name: 'FastAPI',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'python-task-03',
+    module: 'FastAPI Foundations',
+    topics: [
       { title: 'Routes & Schemas', type: 'Learn', minutes: 30, description: 'Define typed request and response models.' },
       { title: 'Async Endpoints', type: 'Practice', minutes: 30, description: 'Build and reason about asynchronous endpoints.' },
     ],
   },
   {
-    id: 'mlops', name: 'MLOps Fundamentals', track: 'AI / ML', module: 'MLOps Foundations', topics: [
+    id: 'mlops',
+    name: 'MLOps Fundamentals',
+    track: 'AI / ML',
+    prerequisiteTaskId: 'machine-learning-task-03',
+    module: 'MLOps Foundations',
+    topics: [
       { title: 'Experiment Tracking', type: 'Learn', minutes: 30, description: 'Record model parameters, metrics, and artifacts.' },
       { title: 'Model Serving & Monitoring', type: 'Learn', minutes: 35, description: 'Review deployment and basic model monitoring.' },
     ],
@@ -420,6 +499,34 @@ export const legacyTaskMap: Record<string, string> = {
   'sql-task-02': 'sql-join-learn',
   'sql-task-03': 'sql-groupby-learn',
   'sql-task-04': 'sql-subqueries-learn',
+}
+
+export const legacyTaskPairMap: Record<string, [string, string]> = {
+  'java-task-01': ['java-basics-learn', 'java-basics-practice'],
+  'java-task-02': ['java-variables-learn', 'java-variables-practice'],
+  'java-task-03': ['java-ifelse-learn', 'java-ifelse-practice'],
+  'java-task-04': ['java-methods-learn', 'java-methods-practice'],
+  'java-task-05': ['java-arrays-learn', 'java-arrays-practice'],
+  'java-task-06': ['java-strings-learn', 'java-strings-practice'],
+  'java-task-07': ['java-oop-learn', 'java-oop-practice'],
+  'java-task-08': ['java-constructors-learn', 'java-constructors-practice'],
+  'java-task-09': ['java-inheritance-learn', 'java-inheritance-practice'],
+  'java-task-10': ['java-polymorphism-learn', 'java-polymorphism-practice'],
+  'java-task-11': ['java-collections-learn', 'java-collections-practice'],
+  'java-task-12': ['java-exceptions-learn', 'java-exceptions-practice'],
+  'dsa-task-01': ['dsa-complexity-learn', 'dsa-complexity-practice'],
+  'dsa-task-02': ['dsa-arrays-learn', 'dsa-arrays-practice'],
+  'dsa-task-03': ['dsa-twopointers-learn', 'dsa-twopointers-practice'],
+  'dsa-task-04': ['dsa-slidingwindow-learn', 'dsa-slidingwindow-practice'],
+  'dsa-task-05': ['dsa-stringshashing-learn', 'dsa-stringshashing-practice'],
+  'dsa-task-06': ['dsa-searching-learn', 'dsa-searching-practice'],
+  'dsa-task-07': ['dsa-sorting-learn', 'dsa-sorting-practice'],
+  'dsa-task-08': ['dsa-linkedlists-learn', 'dsa-linkedlists-practice'],
+  'dsa-task-09': ['dsa-stacksqueues-learn', 'dsa-stacksqueues-practice'],
+  'sql-task-01': ['sql-select-where-learn', 'sql-select-where-practice'],
+  'sql-task-02': ['sql-join-learn', 'sql-join-practice'],
+  'sql-task-03': ['sql-groupby-learn', 'sql-groupby-practice'],
+  'sql-task-04': ['sql-subqueries-learn', 'sql-subqueries-practice'],
 }
 
 export const curriculum: Curriculum = {

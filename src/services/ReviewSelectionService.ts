@@ -1,3 +1,4 @@
+import { migrateTaskId } from '../data/curriculum'
 import { questionBank } from '../data/questionBank'
 import type { ProgressEvent } from '../domain/progress'
 import type { Question, WeeklyQuestionCategory, WeekModel } from '../domain/weeklyTest'
@@ -15,11 +16,13 @@ export function selectWeeklyQuestions(week: WeekModel, events: ProgressEvent[]):
   if (currentTaskIds.size === 0) return []
   const recentTaskIds = new Set(getRecentReviewTaskIds(week, events))
   const olderTaskIds = new Set(getOlderReviewTaskIds(week, events))
-  const current = questionBank.filter((question) => currentTaskIds.has(question.taskId))
-  const recent = questionBank.filter((question) => recentTaskIds.has(question.taskId) && !currentTaskIds.has(question.taskId))
-  const older = questionBank.filter((question) => olderTaskIds.has(question.taskId)
-    && !currentTaskIds.has(question.taskId)
-    && !recentTaskIds.has(question.taskId))
+  const matchesTask = (questionTaskId: string, idSet: Set<string>) =>
+    idSet.has(questionTaskId) || idSet.has(migrateTaskId(questionTaskId))
+  const current = questionBank.filter((question) => matchesTask(question.taskId, currentTaskIds))
+  const recent = questionBank.filter((question) => matchesTask(question.taskId, recentTaskIds) && !matchesTask(question.taskId, currentTaskIds))
+  const older = questionBank.filter((question) => matchesTask(question.taskId, olderTaskIds)
+    && !matchesTask(question.taskId, currentTaskIds)
+    && !matchesTask(question.taskId, recentTaskIds))
   const availableCount = current.length + recent.length + older.length
   const targetCount = Math.min(questionLimit, availableCount)
   if (targetCount === 0) return []

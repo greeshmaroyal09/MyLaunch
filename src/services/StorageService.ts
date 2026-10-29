@@ -1,4 +1,4 @@
-﻿import { migrateTaskId } from '../data/curriculum'
+import { migrateTaskId, legacyTaskPairMap } from '../data/curriculum'
 import type { AppTheme, PersistedAppState } from '../domain/appState'
 import { APP_STATE_SCHEMA_VERSION } from '../domain/appState'
 import type { Application, ApplicationStatus } from '../domain/application'
@@ -92,13 +92,15 @@ function migrateProgressState(value: unknown): unknown {
   const mergedTaskProgress: Record<string, string> = {}
   for (const [taskId, status] of Object.entries(value.taskProgress)) {
     if (typeof status !== 'string') continue
-    const migratedId = migrateTaskId(taskId)
-    const existing = mergedTaskProgress[migratedId]
-    const priority = ['LOCKED', 'AVAILABLE', 'IN_PROGRESS', 'COMPLETED']
-    const priorRank = existing ? priority.indexOf(existing) : -1
-    const currentRank = priority.indexOf(status)
-    const nextStatus = priorRank >= currentRank ? existing ?? status : status
-    mergedTaskProgress[migratedId] = nextStatus ?? status
+    const targetIds = legacyTaskPairMap[taskId] ?? [migrateTaskId(taskId)]
+    for (const migratedId of targetIds) {
+      const existing = mergedTaskProgress[migratedId]
+      const priority = ['LOCKED', 'AVAILABLE', 'IN_PROGRESS', 'COMPLETED']
+      const priorRank = existing ? priority.indexOf(existing) : -1
+      const currentRank = priority.indexOf(status)
+      const nextStatus = priorRank >= currentRank ? existing ?? status : status
+      mergedTaskProgress[migratedId] = nextStatus ?? status
+    }
   }
 
   const events = value.events.map((event) => {

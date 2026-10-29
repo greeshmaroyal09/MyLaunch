@@ -94,6 +94,9 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       if (taskProgressStatus === 'LOCKED') return current
       const taskDefinition = getCurriculumTasks(curriculum).find((item) => item.id === taskId)
       if (!taskDefinition) return current
+      if (!taskDefinition.prerequisiteTaskIds.every((prerequisiteId) => current.progress.taskProgress[prerequisiteId] === 'COMPLETED')) {
+        return current
+      }
       const task = current.schedule.tasks.find((item) => item.id === taskId)
       const plannedDate = task?.plannedDate
         ?? task?.dueDate

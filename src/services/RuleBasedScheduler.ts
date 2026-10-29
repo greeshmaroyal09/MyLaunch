@@ -13,6 +13,17 @@ export type ScheduleInput = {
 export class RuleBasedScheduler {
   generate(input: ScheduleInput): DailySchedule {
     const excluded = new Set(input.excludedTaskIds ?? [])
+    const taskMap = new Map(input.tasks.map((task) => [task.id, task]))
+    const isCompleted = (prerequisiteId: string) => input.progressState[prerequisiteId] === 'COMPLETED'
+
+    const isDirectlyEligible = (task: TaskDefinition) => {
+      const dueDate = shiftDate(input.date, task.dueOffsetDays)
+      const progressStatus = input.progressState[task.id] ?? 'LOCKED'
+      if (dueDate > input.date || excluded.has(task.id)) return false
+      if (!(progressStatus === 'AVAILABLE' || progressStatus === 'IN_PROGRESS')) return false
+      return task.prerequisiteTaskIds.every(isCompleted)
+    }
+
     const groupedCandidates = new Map<string, Array<{
       task: TaskDefinition
       originalIndex: number
@@ -22,12 +33,27 @@ export class RuleBasedScheduler {
 
     for (const task of input.tasks) {
       const dueDate = shiftDate(input.date, task.dueOffsetDays)
-      const progressStatus = input.progressState[task.id] ?? 'LOCKED'
       if (dueDate > input.date || excluded.has(task.id)) continue
-      if (!(progressStatus === 'AVAILABLE' || progressStatus === 'IN_PROGRESS')) continue
-      if (!task.prerequisiteTaskIds.every((prerequisiteId) => input.progressState[prerequisiteId] === 'COMPLETED')) continue
 
-      const groupKey = task.pairedTaskId ?? task.id
+      let eligible = false
+      let progressStatus = input.progressState[task.id] ?? 'LOCKED'
+
+      if (isDirectlyEligible(task)) {
+        eligible = true
+      } else if (task.type === 'Practice' && task.pairedTaskId) {
+        const pairedLearnTask = taskMap.get(task.pairedTaskId)
+        if (pairedLearnTask && isDirectlyEligible(pairedLearnTask)) {
+          const otherPrerequisites = task.prerequisiteTaskIds.filter((id) => id !== task.pairedTaskId)
+          if (otherPrerequisites.every(isCompleted)) {
+            eligible = true
+            progressStatus = 'AVAILABLE'
+          }
+        }
+      }
+
+      if (!eligible) continue
+
+      const groupKey = task.pairedTaskId ? [task.id, task.pairedTaskId].sort().join('::') : task.id
       const entry = { task, originalIndex: input.tasks.indexOf(task), dueDate, progressStatus }
       const group = groupedCandidates.get(groupKey) ?? []
       group.push(entry)
