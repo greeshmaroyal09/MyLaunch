@@ -6,6 +6,7 @@ import type { Company } from './company'
 import type { Opportunity } from './opportunity'
 import type { Project } from './project'
 import type { WeeklyTest } from './weeklyTest'
+import type { HolidayPlanSettings } from '../services/HolidayPlanService'
 
 export const APP_STATE_SCHEMA_VERSION = 5
 export type AppTheme = 'light' | 'dark'
@@ -24,4 +25,5 @@ export type PersistedAppState = {
   opportunities: Opportunity[]
   applications: Application[]
   theme: AppTheme
+  holidayPlan?: HolidayPlanSettings
 }

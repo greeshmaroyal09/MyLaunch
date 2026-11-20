@@ -258,7 +258,7 @@ function generateSchedule(
   const progressState = deriveProgressState(curriculum, currentProgress)
   const schedule = scheduler.generate({
     date,
-    tasks: getCurriculumTasks(curriculum),
+    tasks: getDefaultScheduledTasks(),
     progressState,
     availableMinutes,
     excludedTaskIds,
@@ -276,6 +276,11 @@ function generateSchedule(
     schedule: { ...schedule, availableMinutes: dailyLimitMinutes, calendarStatus },
     progressState: updatedProgress,
   }
+}
+
+function getDefaultScheduledTasks() {
+  const python = curriculum.subjects.find((subject) => subject.id === 'python')
+  return python ? getCurriculumTasks({ ...curriculum, subjects: [python] }) : []
 }
 
 export { sortScheduledTasks } from './RuleBasedScheduler'

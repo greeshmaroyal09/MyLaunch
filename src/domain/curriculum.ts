@@ -1,6 +1,7 @@
 import type { TaskDefinition, TaskProgressStatus } from './task'
 
-export type CurriculumTrack = 'Primary' | 'AI / ML'
+export type CurriculumTrack = 'Primary' | 'Secondary'
+export type CurriculumLane = 'Shared foundation' | 'Generative AI' | 'Voice AI' | 'Secondary Java'
 export type TaskProgressMap = Record<string, TaskProgressStatus>
 
 export type TaskPrerequisite = {
@@ -32,6 +33,8 @@ export type Subject = {
   id: string
   name: string
   track: CurriculumTrack
+  lane: CurriculumLane
+  roadmapOrder: number
   order: number
   modules: Module[]
 }

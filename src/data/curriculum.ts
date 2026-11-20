@@ -1,7 +1,8 @@
-import type { Curriculum, CurriculumTrack, CurriculumTask, Subject, Topic } from '../domain/curriculum'
+import type { Curriculum, CurriculumLane, CurriculumTrack, CurriculumTask, Subject, Topic } from '../domain/curriculum'
 import type { PracticeResource, TaskType } from '../domain/task'
 
 type TopicSeed = {
+  taskId?: string
   title: string
   type: TaskType
   minutes: number
@@ -25,6 +26,8 @@ type SubjectSeed = {
   id: string
   name: string
   track: CurriculumTrack
+  lane?: CurriculumLane
+  roadmapOrder?: number
   module: string
   topics?: TopicSeed[]
   pairedTopics?: PairedTopicSeed[]
@@ -54,7 +57,7 @@ function makeResource(
 function buildSingleTopicSubject(seed: SubjectSeed, subjectOrder: number): Subject {
   let previousTaskId: string | undefined = seed.prerequisiteTaskId
   const topics: Topic[] = (seed.topics ?? []).map((topicSeed, topicIndex) => {
-    const taskId = `${seed.id}-task-${String(topicIndex + 1).padStart(2, '0')}`
+    const taskId = topicSeed.taskId ?? `${seed.id}-task-${String(topicIndex + 1).padStart(2, '0')}`
     const topicId = `${seed.id}-topic-${String(topicIndex + 1).padStart(2, '0')}`
     const prerequisiteTaskIds = previousTaskId ? [previousTaskId] : []
     const task: CurriculumTask = {
@@ -65,7 +68,7 @@ function buildSingleTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
       type: topicSeed.type,
       description: topicSeed.description,
       estimatedMinutes: topicSeed.minutes,
-      priority: 50,
+      priority: seed.track === 'Primary' ? 100 : 30,
       required: true,
       dueOffsetDays: 0,
       prerequisiteTaskIds,
@@ -89,6 +92,8 @@ function buildSingleTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
     id: seed.id,
     name: seed.name,
     track: seed.track,
+    lane: seed.lane ?? (seed.track === 'Primary' ? 'Shared foundation' : 'Secondary Java'),
+    roadmapOrder: seed.roadmapOrder ?? subjectOrder,
     order: subjectOrder,
     modules: [{
       id: `${seed.id}-module-01`,
@@ -115,7 +120,7 @@ function buildPairedTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
       type: 'Learn',
       description: pair.description,
       estimatedMinutes: pair.learnMinutes,
-      priority: 50,
+      priority: seed.track === 'Primary' ? 100 : 30,
       required: true,
       dueOffsetDays: 0,
       prerequisiteTaskIds: learnPrerequisiteTaskIds,
@@ -136,7 +141,7 @@ function buildPairedTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
       type: 'Practice',
       description: `${pair.practiceTitle} for the same concept using guided practice.`,
       estimatedMinutes: pair.practiceMinutes,
-      priority: 50,
+      priority: seed.track === 'Primary' ? 100 : 30,
       required: true,
       dueOffsetDays: 0,
       prerequisiteTaskIds: [learnId],
@@ -159,6 +164,8 @@ function buildPairedTopicSubject(seed: SubjectSeed, subjectOrder: number): Subje
     id: seed.id,
     name: seed.name,
     track: seed.track,
+    lane: seed.lane ?? (seed.track === 'Primary' ? 'Shared foundation' : 'Secondary Java'),
+    roadmapOrder: seed.roadmapOrder ?? subjectOrder,
     order: subjectOrder,
     modules: [{
       id: `${seed.id}-module-01`,
@@ -177,7 +184,7 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'java',
     name: 'Java',
-    track: 'Primary',
+    track: 'Secondary',
     module: 'Java 1.01 / 1.02 — Foundations & OOP',
     pairedTopics: [
       { key: 'basics', learnTitle: 'Java Basics', practiceTitle: 'Java Basics Practice', description: 'Set up a Java program and understand its structure.', learnMinutes: 25, practiceMinutes: 20, learnResources: [makeResource('Java Tutorial', 'https://docs.oracle.com/javase/tutorial/getStarted/index.html', 'Official Documentation', 'Tutorial', 'LEARN', { subject: 'Java', topic: 'Java Basics' })], practiceResources: [makeResource('Java Hello World', 'https://www.hackerrank.com/challenges/hello-world/problem', 'HackerRank', 'Practice Problem', 'PRACTICE', { subject: 'Java', topic: 'Java Basics' })], legacyTaskId: 'java-task-01' },
@@ -199,8 +206,8 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'dsa',
     name: 'DSA',
-    track: 'Primary',
-    prerequisiteTaskId: 'java-strings-practice',
+    track: 'Secondary',
+    prerequisiteTaskId: 'python-task-04',
     module: 'DSA 2.01 — Arrays, Strings, Search & Sort',
     pairedTopics: [
       { key: 'complexity', learnTitle: 'Complexity Basics', practiceTitle: 'Complexity Practice', description: 'Estimate time and space complexity with Big O.', learnMinutes: 25, practiceMinutes: 20, learnResources: [makeResource('Big O Cheat Sheet', 'https://www.bigocheatsheet.com/', 'Other reputable source', 'Reference', 'LEARN', { subject: 'DSA', topic: 'Complexity Basics' })], practiceResources: [makeResource('Two Sum', 'https://leetcode.com/problems/two-sum/', 'LeetCode', 'Practice Problem', 'PRACTICE', { subject: 'DSA', topic: 'Complexity Basics' })], legacyTaskId: 'dsa-task-01' },
@@ -218,7 +225,8 @@ const subjectSeeds: SubjectSeed[] = [
     id: 'sql',
     name: 'SQL',
     track: 'Primary',
-    prerequisiteTaskId: 'java-exceptions-practice',
+    prerequisiteTaskId: 'python-task-06',
+    roadmapOrder: 3,
     module: 'SQL — Joins + Multi-Table Queries',
     pairedTopics: [
       { key: 'select-where', learnTitle: 'SELECT / WHERE', practiceTitle: 'SELECT / WHERE Practice', description: 'Select columns and filter rows with predicates.', learnMinutes: 20, practiceMinutes: 20, learnResources: [makeResource('SQL SELECT', 'https://www.w3schools.com/sql/sql_select.asp', 'SQL reference/practice', 'Documentation', 'LEARN', { subject: 'SQL', topic: 'SELECT / WHERE' })], practiceResources: [makeResource('SQL WHERE practice', 'https://www.hackerrank.com/domains/sql', 'HackerRank', 'Practice Problem', 'PRACTICE', { subject: 'SQL', topic: 'SELECT / WHERE' })], legacyTaskId: 'sql-task-01' },
@@ -230,7 +238,7 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'dbms',
     name: 'DBMS',
-    track: 'Primary',
+    track: 'Secondary',
     prerequisiteTaskId: 'sql-subqueries-practice',
     module: 'DBMS — Relational Design & Transactions',
     topics: [
@@ -243,42 +251,56 @@ const subjectSeeds: SubjectSeed[] = [
     id: 'git-github',
     name: 'Git/GitHub',
     track: 'Primary',
-    prerequisiteTaskId: 'java-strings-practice',
+    roadmapOrder: 2,
     module: 'Version Control',
     topics: [
       { title: 'Git Basics', type: 'Learn', minutes: 20, description: 'Track changes with repositories, commits, and status.' },
       { title: 'Branches & Merges', type: 'Practice', minutes: 25, description: 'Work with branches and resolve a simple merge.' },
       { title: 'GitHub Collaboration', type: 'Practice', minutes: 25, description: 'Use remotes and pull requests in a shared workflow.' },
+      { title: 'Inspecting Changes', type: 'Practice', minutes: 15, description: 'Inspect status, diffs, and commit history.' },
+      { title: 'Undoing Local Changes', type: 'Practice', minutes: 15, description: 'Restore files and safely unstage changes.' },
+      { title: 'Resolving Merge Conflicts', type: 'Practice', minutes: 15, description: 'Resolve a small conflict and verify the result.' },
+      { title: 'Ignore Rules and Secrets', type: 'Practice', minutes: 15, description: 'Configure ignore rules and keep credentials out of commits.' },
+      { title: 'Pull Request Review', type: 'Practice', minutes: 15, description: 'Prepare and review a focused pull request.' },
     ],
   },
   {
     id: 'operating-systems',
     name: 'Operating Systems',
-    track: 'Primary',
-    prerequisiteTaskId: 'dsa-stacksqueues-practice',
+    track: 'Secondary',
     module: 'Operating System Concepts',
     topics: [
       { title: 'Processes & Threads', type: 'Learn', minutes: 30, description: 'Compare processes, threads, and their execution state.' },
       { title: 'Scheduling & Concurrency', type: 'Practice', minutes: 30, description: 'Explore scheduling and synchronization fundamentals.' },
       { title: 'Memory Management', type: 'Learn', minutes: 30, description: 'Study virtual memory, paging, and address translation.' },
+      { title: 'Process Lifecycle', type: 'Practice', minutes: 15, description: 'Trace process creation, states, and termination.' },
+      { title: 'Concurrency and Synchronization', type: 'Practice', minutes: 15, description: 'Identify a race condition and a synchronization strategy.' },
+      { title: 'File Systems', type: 'Learn', minutes: 15, description: 'Explore files, directories, permissions, and storage.' },
+      { title: 'Virtual Memory Practice', type: 'Practice', minutes: 15, description: 'Trace a simple page access and page fault.' },
+      { title: 'OS Concepts Review', type: 'Practice', minutes: 15, description: 'Apply process, memory, and file concepts to a scenario.' },
     ],
   },
   {
     id: 'computer-networks',
     name: 'Computer Networks',
-    track: 'Primary',
-    prerequisiteTaskId: 'operating-systems-task-03',
+    track: 'Secondary',
     module: 'Network Foundations',
     topics: [
       { title: 'Network Layers', type: 'Learn', minutes: 25, description: 'Map common protocols to network layers.' },
       { title: 'TCP and UDP', type: 'Revision', minutes: 25, description: 'Compare transport protocols and their trade-offs.' },
       { title: 'HTTP & DNS', type: 'Learn', minutes: 30, description: 'Trace a web request through DNS and HTTP.' },
+      { title: 'IP Addressing', type: 'Learn', minutes: 15, description: 'Understand IP addresses and basic routing.' },
+      { title: 'Ports and Sockets', type: 'Practice', minutes: 15, description: 'Trace a client connection through a port and socket.' },
+      { title: 'HTTP Request Practice', type: 'Practice', minutes: 15, description: 'Inspect request methods, headers, and response status codes.' },
+      { title: 'TLS Basics', type: 'Learn', minutes: 15, description: 'Explain what HTTPS and TLS protect.' },
+      { title: 'Network Troubleshooting', type: 'Practice', minutes: 15, description: 'Trace DNS resolution and connectivity problems.' },
+      { title: 'Network Foundations Review', type: 'Practice', minutes: 15, description: 'Connect network layers, transport, DNS, and HTTP in one example.' },
     ],
   },
   {
     id: 'oop',
     name: 'OOP',
-    track: 'Primary',
+    track: 'Secondary',
     prerequisiteTaskId: 'java-exceptions-practice',
     module: 'Object-Oriented Design',
     topics: [
@@ -290,7 +312,7 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'backend-development',
     name: 'Backend Development',
-    track: 'Primary',
+    track: 'Secondary',
     prerequisiteTaskId: 'dbms-task-03',
     module: 'Backend 9.01 — REST APIs + Spring Boot',
     topics: [
@@ -303,7 +325,7 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'system-design',
     name: 'System Design Fundamentals',
-    track: 'Primary',
+    track: 'Secondary',
     prerequisiteTaskId: 'backend-development-task-04',
     module: 'System Design Foundations',
     topics: [
@@ -315,20 +337,43 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'python',
     name: 'Python',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'java-strings-practice',
-    module: 'Python 7 — Practical Scripting',
+    track: 'Primary',
+    roadmapOrder: 1,
+    module: 'Python Foundations',
     topics: [
-      { title: 'Python Basics', type: 'Learn', minutes: 25, description: 'Review core syntax, values, and built-in data types.' },
-      { title: 'Functions & Collections', type: 'Practice', minutes: 30, description: 'Write functions that transform common collections.' },
-      { title: 'Modules & Environments', type: 'Practice', minutes: 25, description: 'Organize code and work with project environments.' },
+      { taskId: 'python-task-01', title: 'Python Basics', type: 'Learn', minutes: 25, description: 'Start with Python syntax, values, variables, and built-in data types.' },
+      { taskId: 'python-task-04', title: 'Control Flow & Strings', type: 'Practice', minutes: 30, description: 'Study conditionals, loops, and strings, then use them in short exercises.' },
+      { taskId: 'python-task-02', title: 'Functions & Collections', type: 'Practice', minutes: 30, description: 'Study functions and built-in collections, then write functions that transform lists, tuples, sets, and dictionaries.' },
+      { taskId: 'python-task-03', title: 'Modules & Environments', type: 'Practice', minutes: 25, description: 'Organize code and work with modules, packages, and project environments.' },
+      { taskId: 'python-task-05', title: 'Files & Exceptions', type: 'Practice', minutes: 30, description: 'Read and write files and handle failures with clear exception paths.' },
+      { taskId: 'python-task-06', title: 'Python OOP', type: 'Learn', minutes: 30, description: 'Model state and behavior with Python classes and objects.' },
+      { title: 'Python Basics Practice', type: 'Practice', minutes: 30, description: 'Practice expressions, conditions, loops, and strings.' },
+      { title: 'Collections Practice', type: 'Practice', minutes: 30, description: 'Solve small problems with lists, dictionaries, and sets.' },
+      { title: 'Functions and Modules Practice', type: 'Practice', minutes: 30, description: 'Build reusable functions and import them from a module.' },
+      { title: 'Files and Exceptions Practice', type: 'Practice', minutes: 30, description: 'Read a file, validate input, and handle errors.' },
+      { title: 'Intermediate Python: Comprehensions', type: 'Learn', minutes: 30, description: 'Use comprehensions to transform and filter collections.' },
+      { title: 'Comprehensions Practice', type: 'Practice', minutes: 30, description: 'Refactor loops into readable comprehensions.' },
+      { title: 'Intermediate Python: Iterators', type: 'Learn', minutes: 30, description: 'Understand iterables, iterators, and generators.' },
+      { title: 'Iterators Practice', type: 'Practice', minutes: 30, description: 'Write and use a simple generator.' },
+      { title: 'Intermediate Python: OOP Practice', type: 'Practice', minutes: 30, description: 'Build a small class with methods and composition.' },
+      { title: 'Useful Libraries: Standard Library', type: 'Learn', minutes: 30, description: 'Use pathlib, json, and collections for everyday tasks.' },
+      { title: 'Standard Library Practice', type: 'Practice', minutes: 30, description: 'Read JSON and summarize records with standard-library tools.' },
+      { title: 'Useful Libraries: NumPy', type: 'Learn', minutes: 30, description: 'Explore arrays, shapes, and vectorized operations.' },
+      { title: 'NumPy Practice', type: 'Practice', minutes: 30, description: 'Transform and summarize arrays.' },
+      { title: 'Useful Libraries: Pandas', type: 'Learn', minutes: 30, description: 'Explore data frames, selection, and summaries.' },
+      { title: 'Pandas Practice', type: 'Practice', minutes: 30, description: 'Clean and summarize a small table.' },
+      { title: 'AI/ML Concepts and Tools', type: 'Learn', minutes: 30, description: 'Explore features, labels, training, evaluation, and introductory model tools.' },
+      { title: 'AI/ML Introductory Practice', type: 'Practice', minutes: 30, description: 'Prepare a small dataset and reason about a baseline model.' },
+      { title: 'Problem Solving: Strings and Collections', type: 'Problem Solving', minutes: 30, description: 'Solve a focused string and collection challenge.' },
+      { title: 'Problem Solving: Data and Functions', type: 'Problem Solving', minutes: 30, description: 'Solve a small data-processing problem using functions and prior topics.' },
     ],
   },
   {
     id: 'numpy-pandas',
     name: 'NumPy/Pandas',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'python-task-03',
+    track: 'Primary',
+    prerequisiteTaskId: 'python-task-06',
+    roadmapOrder: 4,
     module: 'Data Analysis Tools',
     topics: [
       { title: 'NumPy Arrays', type: 'Learn', minutes: 30, description: 'Create arrays and use vectorized operations.' },
@@ -339,20 +384,23 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'machine-learning',
     name: 'Machine Learning',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'numpy-pandas-task-03',
+    track: 'Primary',
+    prerequisiteTaskId: 'math-statistics-task-03',
+    roadmapOrder: 6,
     module: 'Machine Learning Fundamentals',
     topics: [
       { title: 'Learning Problem Types', type: 'Learn', minutes: 30, description: 'Distinguish supervised and unsupervised learning.' },
       { title: 'Features & Evaluation', type: 'Learn', minutes: 30, description: 'Prepare features and choose basic evaluation measures.' },
       { title: 'Baseline Model Practice', type: 'Practice', minutes: 35, description: 'Train and evaluate a simple baseline model.' },
+      { title: 'Scikit-learn Workflow', type: 'Practice', minutes: 30, description: 'Split data, fit a baseline, validate, and interpret evaluation metrics.' },
     ],
   },
   {
     id: 'nlp',
     name: 'NLP',
-    track: 'AI / ML',
+    track: 'Primary',
     prerequisiteTaskId: 'machine-learning-task-03',
+    roadmapOrder: 7,
     module: 'Natural Language Processing',
     topics: [
       { title: 'Text Preprocessing', type: 'Learn', minutes: 25, description: 'Normalize and tokenize text for analysis.' },
@@ -362,8 +410,9 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'llm-fundamentals',
     name: 'LLM Fundamentals',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'nlp-task-02',
+    track: 'Primary',
+    prerequisiteTaskId: 'machine-learning-task-03',
+    roadmapOrder: 11,
     module: 'Large Language Models',
     topics: [
       { title: 'Tokens & Context Windows', type: 'Learn', minutes: 25, description: 'Understand tokenization and context limits.' },
@@ -373,19 +422,21 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'rag',
     name: 'RAG',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'llm-fundamentals-task-02',
+    track: 'Primary',
+    prerequisiteTaskId: 'applied-ai-core-task-06',
+    roadmapOrder: 13,
     module: 'Retrieval-Augmented Generation',
     topics: [
-      { title: 'Retrieval Pipeline', type: 'Learn', minutes: 30, description: 'Trace chunking, retrieval, and grounded generation.' },
+      { title: 'Retrieval Pipeline', type: 'Learn', minutes: 30, description: 'Trace chunking, embeddings, retrieval, and grounded generation.' },
       { title: 'RAG Evaluation', type: 'Practice', minutes: 30, description: 'Inspect retrieval quality and answer grounding.' },
     ],
   },
   {
     id: 'fastapi',
     name: 'FastAPI',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'python-task-03',
+    track: 'Primary',
+    prerequisiteTaskId: 'python-task-06',
+    roadmapOrder: 12,
     module: 'FastAPI Foundations',
     topics: [
       { title: 'Routes & Schemas', type: 'Learn', minutes: 30, description: 'Define typed request and response models.' },
@@ -395,12 +446,150 @@ const subjectSeeds: SubjectSeed[] = [
   {
     id: 'mlops',
     name: 'MLOps Fundamentals',
-    track: 'AI / ML',
-    prerequisiteTaskId: 'machine-learning-task-03',
+    track: 'Primary',
+    prerequisiteTaskId: 'rag-task-02',
+    roadmapOrder: 14,
     module: 'MLOps Foundations',
     topics: [
       { title: 'Experiment Tracking', type: 'Learn', minutes: 30, description: 'Record model parameters, metrics, and artifacts.' },
       { title: 'Model Serving & Monitoring', type: 'Learn', minutes: 35, description: 'Review deployment and basic model monitoring.' },
+    ],
+  },
+  {
+    id: 'math-statistics',
+    name: 'Math & Statistics',
+    track: 'Primary',
+    prerequisiteTaskId: 'numpy-pandas-task-03',
+    roadmapOrder: 5,
+    module: 'Common Software and Data Foundations',
+    topics: [
+      { title: 'Linear Algebra Essentials', type: 'Learn', minutes: 30, description: 'Review vectors, matrices, and the operations used in machine learning.' },
+      { title: 'Probability & Distributions', type: 'Learn', minutes: 30, description: 'Reason about probability, common distributions, and uncertainty.' },
+      { title: 'Statistics for Evaluation', type: 'Practice', minutes: 30, description: 'Use summary statistics and sampling ideas when interpreting model results.' },
+    ],
+  },
+  {
+    id: 'neural-networks',
+    name: 'Neural Networks',
+    track: 'Primary',
+    prerequisiteTaskId: 'machine-learning-task-03',
+    roadmapOrder: 8,
+    module: 'AI/ML Foundations',
+    topics: [
+      { title: 'Neural Network Basics', type: 'Learn', minutes: 35, description: 'Understand layers, activations, forward passes, and loss functions.' },
+      { title: 'Training & Generalization', type: 'Learn', minutes: 35, description: 'Study gradients, optimization, overfitting, and regularization.' },
+    ],
+  },
+  {
+    id: 'pytorch',
+    name: 'PyTorch Basics',
+    track: 'Primary',
+    prerequisiteTaskId: 'neural-networks-task-02',
+    roadmapOrder: 9,
+    module: 'AI/ML Foundations',
+    topics: [
+      { title: 'Tensors & Autograd', type: 'Learn', minutes: 35, description: 'Work with tensors and automatic differentiation concepts.' },
+      { title: 'Training Loop Basics', type: 'Practice', minutes: 40, description: 'Structure a small model, loss, optimizer, and training loop.' },
+    ],
+  },
+  {
+    id: 'transformer-attention',
+    name: 'Transformers & Attention',
+    track: 'Primary',
+    prerequisiteTaskId: 'pytorch-task-02',
+    roadmapOrder: 10,
+    module: 'AI/ML Foundations',
+    topics: [
+      { title: 'Attention Fundamentals', type: 'Learn', minutes: 35, description: 'Understand queries, keys, values, and attention scores.' },
+      { title: 'Transformer Architecture', type: 'Learn', minutes: 35, description: 'Trace embeddings, attention blocks, feed-forward layers, and residual paths.' },
+      { title: 'Transformer Model Use', type: 'Practice', minutes: 35, description: 'Connect transformer fundamentals to practical language-model behavior.' },
+    ],
+  },
+  {
+    id: 'applied-ai-core',
+    name: 'Applied AI Core',
+    track: 'Primary',
+    prerequisiteTaskId: 'llm-fundamentals-task-02',
+    roadmapOrder: 12,
+    module: 'Applied AI Core',
+    topics: [
+      { title: 'Model APIs', type: 'Practice', minutes: 30, description: 'Design dependable application boundaries around model API calls.' },
+      { title: 'Structured Outputs', type: 'Practice', minutes: 30, description: 'Constrain and validate model responses against application schemas.' },
+      { title: 'Tool Use', type: 'Practice', minutes: 35, description: 'Connect models to explicit tools with validated inputs and outputs.' },
+      { title: 'Applied AI Evaluation', type: 'Practice', minutes: 35, description: 'Build task-specific checks for quality, grounding, and regressions.' },
+      { title: 'Reliability & Guardrails', type: 'Learn', minutes: 30, description: 'Plan retries, fallbacks, validation, and safe failure behavior.' },
+      { title: 'Deployment & Observability', type: 'Learn', minutes: 35, description: 'Track latency, errors, cost, and quality in deployed AI systems.' },
+    ],
+  },
+  {
+    id: 'generative-ai-specialization',
+    name: 'Generative AI Engineer',
+    track: 'Primary',
+    lane: 'Generative AI',
+    prerequisiteTaskId: 'mlops-task-02',
+    roadmapOrder: 1,
+    module: 'Generative AI Specialization',
+    topics: [
+      { title: 'Prompting & Structured Generation', type: 'Practice', minutes: 35, description: 'Design prompts and structured generation flows for repeatable application behavior.' },
+      { title: 'RAG & Context Systems', type: 'Practice', minutes: 40, description: 'Design context assembly, retrieval, grounding, and citation behavior.' },
+      { title: 'Agents & Tool Use', type: 'Practice', minutes: 40, description: 'Orchestrate bounded agent loops and tools with explicit state and stopping rules.' },
+      { title: 'Fine-Tuning Decision Basics', type: 'Learn', minutes: 30, description: 'Evaluate fine-tuning later when prompting, retrieval, and tools are insufficient.' },
+      { title: 'Generative AI Evaluation', type: 'Practice', minutes: 35, description: 'Evaluate correctness, groundedness, safety, and task success.' },
+      { title: 'Generative AI Production', type: 'Practice', minutes: 40, description: 'Prepare scalable, observable, and cost-aware generative AI services.' },
+    ],
+  },
+  {
+    id: 'voice-ai-specialization',
+    name: 'Voice AI / Conversational AI Engineer',
+    track: 'Primary',
+    lane: 'Voice AI',
+    prerequisiteTaskId: 'mlops-task-02',
+    roadmapOrder: 1,
+    module: 'Voice AI / Conversational AI Specialization',
+    topics: [
+      { title: 'STT / ASR Pipelines', type: 'Learn', minutes: 35, description: 'Understand streaming speech recognition, transcription quality, and endpointing.' },
+      { title: 'TTS Pipelines', type: 'Learn', minutes: 35, description: 'Understand speech synthesis, voice output controls, and streaming playback.' },
+      { title: 'Dialogue Management', type: 'Practice', minutes: 40, description: 'Design dialogue policies, recovery behavior, and clear conversation goals.' },
+      { title: 'Conversation State', type: 'Practice', minutes: 35, description: 'Track short-term context, user state, and durable conversation memory safely.' },
+      { title: 'Multilingual Conversations', type: 'Learn', minutes: 30, description: 'Handle language detection, switching, locale behavior, and multilingual evaluation.' },
+      { title: 'Turn-Taking & Latency', type: 'Practice', minutes: 40, description: 'Manage interruptions, endpointing, response timing, and perceived latency.' },
+      { title: 'Voice-System Evaluation', type: 'Practice', minutes: 35, description: 'Evaluate recognition, synthesis, task success, latency, and conversational recovery.' },
+      { title: 'Voice AI Deployment', type: 'Practice', minutes: 40, description: 'Deploy and observe a real-time voice pipeline with reliability and cost controls.' },
+    ],
+  },
+  {
+    id: 'portfolio-work', name: 'Portfolio Project Work', track: 'Primary',
+    prerequisiteTaskId: 'applied-ai-core-task-01', roadmapOrder: 15,
+    module: 'Portfolio and Application Preparation',
+    topics: [
+      { title: 'Plan an AI or Voice Project', type: 'Project Work', minutes: 30, description: 'Choose an existing project if available; define its user problem, scope, and measurable success criteria.' },
+      { title: 'Project Implementation Session', type: 'Project Work', minutes: 45, description: 'Build and run a small end-to-end feature in your existing project; continue as needed.' },
+      { title: 'Project Evaluation Session', type: 'Project Work', minutes: 45, description: 'Create representative test cases and record quality, failures, and limitations.' },
+      { title: 'Project Documentation Session', type: 'Project Work', minutes: 30, description: 'Work on a clear README, setup instructions, demo, and evaluation notes.' },
+      { title: 'Resume and GitHub Review', type: 'Practice', minutes: 30, description: 'Review evidence, links, project explanations, and resume accuracy.' },
+      { title: 'Internship Interview Practice', type: 'Practice', minutes: 30, description: 'Explain Python, one project, complexity, and introductory ML in a mock interview.' },
+    ],
+  },
+  {
+    id: 'data-visualization', name: 'Data Visualization', track: 'Primary',
+    prerequisiteTaskId: 'numpy-pandas-task-03', roadmapOrder: 5,
+    module: 'Data and ML Foundations',
+    topics: [
+      { title: 'Plotting and Visual Interpretation', type: 'Learn', minutes: 30, description: 'Choose plots and interpret distributions, trends, and outliers.' },
+      { title: 'Visualize a Dataset', type: 'Practice', minutes: 30, description: 'Build and explain a small visualization from tabular data.' },
+    ],
+  },
+  {
+    id: 'full-time-preparation', name: 'Full-Time Preparation', track: 'Primary',
+    prerequisiteTaskId: 'voice-ai-specialization-task-08', roadmapOrder: 99,
+    module: 'Entry-Level Application Preparation',
+    topics: [
+      { title: 'API Testing and Deployment Practice', type: 'Practice', minutes: 45, description: 'Exercise API validation, automated tests, deployment, and error handling.' },
+      { title: 'Deeper GenAI Evaluation', type: 'Practice', minutes: 45, description: 'Evaluate retrieval, response quality, regressions, reliability, and failure cases.' },
+      { title: 'Second Project Planning Session', type: 'Project Work', minutes: 30, description: 'Choose an existing suitable project where possible and plan a distinct portfolio contribution.' },
+      { title: 'Second Project Build Session', type: 'Project Work', minutes: 45, description: 'Advance a working feature; plan further implementation time as needed.' },
+      { title: 'Second Project Evaluation Session', type: 'Project Work', minutes: 45, description: 'Add tests, evaluation, a README, and demo evidence; continue polishing as needed.' },
+      { title: 'Full-Time Mock Interview', type: 'Practice', minutes: 45, description: 'Practice Python, DSA, systems, and a project walkthrough; review feedback.' },
     ],
   },
 ]
@@ -464,9 +653,16 @@ function attachMissingResources(subjects: Subject[]): Subject[] {
         ...topic,
         tasks: topic.tasks.map((task) => {
           const hasResource = task.practiceResources?.some((resource) => resource.title && resource.url && resource.usage)
-          return hasResource || !resourceCoverage[task.id]
-            ? task
-            : { ...task, practiceResources: resourceCoverage[task.id] }
+          const additions: PracticeResource[] = []
+          if (subject.id === 'python') additions.push(makeResource(task.type === 'Learn' ? 'Python Tutorial' : 'Python Practice', task.type === 'Learn' ? 'https://docs.python.org/3/tutorial/' : 'https://www.hackerrank.com/domains/python', task.type === 'Learn' ? 'Python Documentation' : 'HackerRank', task.type === 'Learn' ? 'Tutorial' : 'Problem Set', task.type === 'Learn' ? 'LEARN' : 'PRACTICE'))
+          if (subject.id === 'dsa') additions.push(makeResource('LeetCode Study Plans', 'https://leetcode.com/studyplan/', 'LeetCode', 'Problem Set', 'PRACTICE'))
+          if (['numpy-pandas', 'data-visualization', 'machine-learning'].includes(subject.id)) additions.push(makeResource('Kaggle Learn', 'https://www.kaggle.com/learn/', 'Other reputable source', 'Course/Guide', 'PRACTICE'))
+          if (subject.id === 'git-github') additions.push(makeResource('Pro Git', 'https://git-scm.com/book/en/v2', 'Official Documentation', 'Course/Guide', 'LEARN'))
+          if (subject.id === 'machine-learning') additions.push(makeResource('scikit-learn Getting Started', 'https://scikit-learn.org/stable/getting_started', 'Official Documentation', 'Tutorial', 'PRACTICE'))
+          if (subject.id === 'pytorch') additions.push(makeResource('PyTorch Basics', 'https://docs.pytorch.org/tutorials/beginner/basics/intro', 'Official Documentation', 'Tutorial', 'PRACTICE'))
+          if (subject.id === 'fastapi') additions.push(makeResource('FastAPI Tutorial', 'https://fastapi.tiangolo.com/tutorial/', 'Official Documentation', 'Tutorial', 'PRACTICE'))
+          const existing = hasResource ? task.practiceResources ?? [] : resourceCoverage[task.id] ?? []
+          return { ...task, practiceResources: [...existing, ...additions.filter((addition) => !existing.some((resource) => resource.url === addition.url))] }
         }),
       })),
     })),

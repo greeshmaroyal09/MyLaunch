@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Check, Circle, LockKeyhole, Play } from 'lucide-react'
 import { curriculum } from '../data/curriculum'
-import type { CurriculumTask, CurriculumTrack, TaskProgressMap } from '../domain/curriculum'
+import type { CurriculumLane, CurriculumTask, TaskProgressMap } from '../domain/curriculum'
 import type { TaskProgressStatus } from '../domain/task'
 import type { ProgressSummary } from '../domain/progress'
 import { getCurriculumProgress } from '../services/ScheduleService'
 import './curriculum.css'
+import { CareerPriority } from './CareerPriority'
 
 type CurriculumRoadmapProps = {
   progressState: TaskProgressMap
@@ -15,9 +16,17 @@ type CurriculumRoadmapProps = {
 }
 
 export function CurriculumRoadmap({ progressState, progressSummary, skippedTaskIds, onToggleTask }: CurriculumRoadmapProps) {
-  const [activeTrack, setActiveTrack] = useState<CurriculumTrack>('Primary')
+  const [activeLane, setActiveLane] = useState<CurriculumLane>('Shared foundation')
   const totals = getCurriculumProgress(curriculum, progressState)
-  const subjects = curriculum.subjects.filter((subject) => subject.track === activeTrack)
+  const subjects = curriculum.subjects
+    .filter((subject) => subject.lane === activeLane)
+    .sort((left, right) => left.roadmapOrder - right.roadmapOrder)
+  const lanes: Array<{ value: CurriculumLane; label: string }> = [
+    { value: 'Shared foundation', label: 'Shared Applied AI foundation' },
+    { value: 'Generative AI', label: 'Generative AI Engineer' },
+    { value: 'Voice AI', label: 'Voice / Conversational AI' },
+    { value: 'Secondary Java', label: 'Java · Secondary' },
+  ]
 
   return (
     <div className="curriculum-roadmap">
@@ -30,24 +39,26 @@ export function CurriculumRoadmap({ progressState, progressSummary, skippedTaskI
         <div className="curriculum-count"><strong>{totals.completedTaskCount}/{totals.totalTaskCount}</strong><span>tasks complete</span></div>
       </header>
 
+      <CareerPriority compact />
+
       <section className="curriculum-progress" aria-label="Overall curriculum progress">
         <div className="curriculum-progress-label"><span>Overall progress</span><strong>{totals.completionPercent}%</strong></div>
         <div className="curriculum-progress-track"><span style={{ width: `${totals.completionPercent}%` }} /></div>
       </section>
       <div className="roadmap-progress-note">{progressSummary.totalPoints} points · {progressSummary.totalXP} XP · Level {progressSummary.currentLevel.level} · {progressSummary.currentStreak}-day streak · longest {progressSummary.longestStreak}</div>
 
-      <div className="curriculum-track-tabs" role="tablist" aria-label="Curriculum track">
-        {(['Primary', 'AI / ML'] as const).map((track) => (
+      <div className="curriculum-track-tabs" role="tablist" aria-label="Career roadmap lane">
+        {lanes.map((lane) => (
           <button
-            key={track}
-            className={activeTrack === track ? 'active' : ''}
+            key={lane.value}
+            className={`${activeLane === lane.value ? 'active' : ''}${lane.value === 'Secondary Java' ? ' secondary-lane-tab' : ''}`}
             type="button"
             role="tab"
-            aria-selected={activeTrack === track}
-            onClick={() => setActiveTrack(track)}
+            aria-selected={activeLane === lane.value}
+            onClick={() => setActiveLane(lane.value)}
           >
-            {track === 'Primary' ? 'Core career track' : 'AI / ML track'}
-            <span>{curriculum.subjects.filter((subject) => subject.track === track).length}</span>
+            {lane.label}
+            <span>{curriculum.subjects.filter((subject) => subject.lane === lane.value).length}</span>
           </button>
         ))}
       </div>
@@ -64,7 +75,7 @@ export function CurriculumRoadmap({ progressState, progressSummary, skippedTaskI
             <section className="curriculum-subject" key={subject.id} aria-labelledby={`subject-${subject.id}`}>
               <header className="curriculum-subject-heading">
                 <div>
-                  <span className="curriculum-subject-index">{String(subject.order).padStart(2, '0')}</span>
+                  <span className="curriculum-subject-index">{String(subject.roadmapOrder).padStart(2, '0')}</span>
                   <div>
                     <h2 id={`subject-${subject.id}`}>{subject.name}</h2>
                     <span className="curriculum-module-name">{activeTask ? subject.modules.find((module) => module.topics.some((topic) => topic.tasks.some((task) => task.id === activeTask.id)))?.title : subject.modules[0]?.title}</span>

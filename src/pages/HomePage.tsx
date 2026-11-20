@@ -8,6 +8,7 @@ import type { ProgressSummary } from '../domain/progress'
 import type { CalendarDate } from '../domain/calendar'
 import type { WeeklyTest } from '../domain/weeklyTest'
 import { WeeklyTestCard } from '../components/WeeklyTestCard'
+import { CareerPriority } from '../components/CareerPriority'
 import './home.css'
 
 type ProjectsSummary = {
@@ -67,8 +68,10 @@ export function HomePage({ schedule, summary, progressState, progressSummary, on
         <PointsDisplay progress={progressSummary} />
       </section>
 
+      <CareerPriority />
+
       <div className="home-columns">
-        <Roadmap />
+        <Roadmap progressState={progressState} />
         <aside className="home-aside">
           <TodayTasks schedule={schedule} summary={summary} progressState={progressState} progressSummary={progressSummary} onViewToday={onViewToday} onViewRoadmap={onViewRoadmap} calendarStatusLabel={calendarStatusLabel} upcomingLearningDate={upcomingLearningDate} />
           <WeeklyTestCard test={weeklyTest} onOpen={onViewTests} compact />

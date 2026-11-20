@@ -6,7 +6,7 @@ import './resources.css'
 
 const tracks: Array<{ value: ResourceFilters['track']; label: string }> = [
   { value: 'Primary', label: 'Primary' },
-  { value: 'AI / ML', label: 'AI / ML / Secondary' },
+  { value: 'Secondary', label: 'Secondary' },
   { value: 'All', label: 'All resources' },
 ]
 
@@ -58,7 +58,7 @@ export function ResourcesPage() {
 
       <div className="resources-results-heading">
         <div><SlidersHorizontal size={15} aria-hidden="true" /><span>{filteredResources.length} of {resources.length} resources</span></div>
-        <span>{filters.track === 'All' ? 'All curriculum tracks' : filters.track === 'Primary' ? 'Primary career track' : 'AI / ML secondary track'}</span>
+        <span>{filters.track === 'All' ? 'All curriculum tracks' : filters.track === 'Primary' ? 'Applied AI primary track' : 'Java and core CS secondary track'}</span>
       </div>
 
       {filteredResources.length ? (

@@ -10,7 +10,7 @@ import { CareerService } from './CareerService'
 import { ProgressService } from './ProgressService'
 import { getWeekModel } from './WeekService'
 
-export type ProgressTrackFilter = 'Primary' | 'AI / ML' | 'All'
+export type ProgressTrackFilter = 'Primary' | 'Secondary' | 'All'
 
 export type SubjectProgress = {
   subject: Subject

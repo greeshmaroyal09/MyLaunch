@@ -22,6 +22,7 @@ import { formatScheduleDate, ScheduleService } from './services/ScheduleService'
 import { ProgressService } from './services/ProgressService'
 import { CalendarService } from './services/CalendarService'
 import { getTodayDate, nextDay } from './services/DateService'
+import { HolidayPlanService } from './services/HolidayPlanService'
 import { WeeklyTestService } from './services/WeeklyTestService'
 import { evaluateOpportunityEligibility } from './services/EligibilityService'
 import { JobService } from './services/JobService'
@@ -40,12 +41,13 @@ function ApplicationShell() {
   const [activeSection, setActiveSection] = useState<Section>('Home')
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [selectedCareerOpportunityId, setSelectedCareerOpportunityId] = useState<string | null>(null)
-  const { schedule, progress, theme, setTheme, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, calendarConfiguration, leaveRecords, schedulesByDate, selectedCalendarDate, inspectDate, markLeave, removeLeave, weeklyTests, projects, companies, opportunities, applications, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication } = useSchedule()
+  const { schedule, progress, theme, setTheme, holidayPlan, setHolidayPlan, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, calendarConfiguration, leaveRecords, schedulesByDate, selectedCalendarDate, inspectDate, markLeave, removeLeave, weeklyTests, projects, companies, opportunities, applications, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication } = useSchedule()
   const summary = ScheduleService.getSummary(schedule)
-  const isLearningDate = (date: string) => CalendarService.getStatus(date, calendarConfiguration, leaveRecords) === 'LEARNING_DAY'
+  const isLearningDate = (date: string) => HolidayPlanService.indexOf(holidayPlan, date) >= 0 || CalendarService.getStatus(date, calendarConfiguration, leaveRecords) === 'LEARNING_DAY'
   const progressSummary = ProgressService.getSummary(progress, schedule.date, isLearningDate)
   const calendarStatusLabel = CalendarService.getStatusLabel(schedule.calendarStatus)
-  const upcomingLearningDate = CalendarService.nextLearningDate(nextDay(schedule.date), calendarConfiguration, leaveRecords)
+  const tomorrow = nextDay(schedule.date)
+  const upcomingLearningDate = HolidayPlanService.indexOf(holidayPlan, tomorrow) >= 0 ? tomorrow : CalendarService.nextLearningDate(tomorrow, calendarConfiguration, leaveRecords)
   const weeklyTestContext = { date: schedule.date, events: progress.events, calendarConfiguration, leaveRecords, tests: weeklyTests }
   const weeklyTestPreview = WeeklyTestService.getTest(weeklyTestContext)
   const weeklyTestForHome = weeklyTests
@@ -128,7 +130,9 @@ function ApplicationShell() {
               progressState={progress.taskProgress}
               progressSummary={progressSummary}
               progressEvents={progress.events}
-              schedulesByDate={schedulesByDate}
+              projects={projects}
+              holidayPlan={holidayPlan}
+              onChangeHolidayPlan={setHolidayPlan}
               calendarConfiguration={calendarConfiguration}
               leaveRecords={leaveRecords}
               onCompleteTask={completeTask}

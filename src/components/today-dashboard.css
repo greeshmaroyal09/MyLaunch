@@ -2,6 +2,9 @@
 .today-page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 23px; }
 .today-page-heading h1 { margin: 5px 0 6px; color: #9b5e72; font-family: 'Fraunces', Georgia, serif; font-size: 36px; font-weight: 500; line-height: 1.12; }
 .today-page-heading p { color: rgba(155, 94, 114, 0.78); font-size: 12px; line-height: 1.6; }
+.holiday-plan-settings { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; padding: 12px 14px; border: 1px solid rgba(155, 94, 114, 0.18); background: rgba(255, 255, 255, 0.88); color: #9b5e72; }
+.holiday-plan-settings label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; }
+.holiday-plan-settings :is(input, select) { padding: 7px; border: 1px solid rgba(155, 94, 114, 0.25); background: transparent; color: inherit; font: inherit; }
 .planner-date-navigation { display: flex; align-items: center; gap: 9px; padding: 4px; border: 1px solid rgba(155, 94, 114, 0.22); color: #9b5e72; font-size: 13px; font-weight: 600; white-space: nowrap; }
 .planner-date-navigation svg { flex: 0 0 auto; color: #9b5e72; }
 .planner-current-date { min-width: 74px; text-align: center; }
@@ -58,6 +61,11 @@
 .future-schedule-panel > .today-task-heading { margin-bottom: 14px; }
 .future-schedule-panel .today-task-heading h2 { font-size: 24px; }
 .future-schedule-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.readiness-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; margin-top: 14px; }
+.readiness-checklist { display: grid; gap: 10px; margin-top: 12px; }
+.readiness-checklist label { display: flex; align-items: flex-start; gap: 8px; color: #9b5e72; font-size: 12px; line-height: 1.45; }
+.readiness-checklist input { flex: 0 0 auto; margin-top: 2px; }
+.future-day-budget { display: flex; align-items: center; gap: 6px; margin-top: 9px; color: #9b5e72; font-size: 11px; }
 .future-day-card { min-width: 0; padding: 13px 14px; border: 1px solid rgba(155, 94, 114, 0.14); background: rgba(223, 197, 254, 0.12); }
 .future-day-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid rgba(155, 94, 114, 0.14); color: #9b5e72; }
 .future-day-header strong { font-size: 14px; font-weight: 700; }

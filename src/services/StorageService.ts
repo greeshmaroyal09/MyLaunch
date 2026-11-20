@@ -55,6 +55,7 @@ function isPersistedState(value: unknown): value is PersistedAppState {
   if (!Array.isArray(value.opportunities) || !value.opportunities.every(isOpportunity)) return false
   if (!Array.isArray(value.applications) || !value.applications.every(isApplication)) return false
   if (!isDateKey(value.currentDate) || !isRecord(value.schedulesByDate)) return false
+  if (value.holidayPlan !== undefined && (!isRecord(value.holidayPlan) || !isDateKey(value.holidayPlan.startDate) || ![60, 120, 180].includes(Number(value.holidayPlan.dailyMinutes)) || !isRecord(value.holidayPlan.budgetsByDate) || !Object.entries(value.holidayPlan.budgetsByDate).every(([date, budget]) => isDateKey(date) && [60, 120, 180].includes(Number(budget))) || !isRecord(value.holidayPlan.readinessChecks) || !Object.values(value.holidayPlan.readinessChecks).every((check) => typeof check === 'boolean'))) return false
   return Object.entries(value.schedulesByDate).every(([date, schedule]) =>
     isDateKey(date) && isDailySchedule(schedule) && schedule.date === date,
   )
@@ -81,6 +82,7 @@ function migratePersistedState(value: unknown): unknown {
 
   return {
     ...migrated,
+    holidayPlan: isRecord(migrated.holidayPlan) && isRecord(migrated.holidayPlan.budgetsByDate) ? migrated.holidayPlan : { startDate: '2026-11-25', dailyMinutes: 60, budgetsByDate: {}, readinessChecks: {} },
     progress: migrateProgressState(migrated.progress),
     schedulesByDate: migrateSchedulesByDate(migrated.schedulesByDate),
   }

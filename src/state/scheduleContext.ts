@@ -11,6 +11,7 @@ import type { WeeklyTest } from '../domain/weeklyTest'
 import type { CreateApplicationInput } from '../services/ApplicationService'
 import type { ProjectCreateInput, ProjectMilestoneInput, ProjectTaskInput } from '../services/ProjectService'
 import type { CreateOpportunityInput } from '../services/OpportunityService'
+import type { HolidayPlanSettings } from '../services/HolidayPlanService'
 
 export type ScheduleContextValue = {
   schedule: DailySchedule
@@ -25,6 +26,8 @@ export type ScheduleContextValue = {
   opportunities: Opportunity[]
   applications: Application[]
   theme: AppTheme
+  holidayPlan: HolidayPlanSettings
+  setHolidayPlan: (settings: HolidayPlanSettings) => void
   setTheme: (theme: AppTheme) => void
   completeTask: (taskId: string) => void
   skipTask: (taskId: string, skipType?: SkipType, reason?: string) => void

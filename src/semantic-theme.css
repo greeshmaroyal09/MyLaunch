@@ -1,0 +1,87 @@
+:root {
+  --theme-background: #faf6f4;
+  --theme-surface: #ffffff;
+  --theme-surface-raised: #f7eff2;
+  --theme-text-primary: #3c2534;
+  --theme-text-secondary: #725263;
+  --theme-border: #dfcdd5;
+  --theme-accent: #81445f;
+  --theme-accent-soft: #f2e5eb;
+  --theme-success: #7c5267;
+  --theme-success-soft: #eee1e7;
+  --theme-input: #ffffff;
+  --theme-shadow: rgba(60, 37, 52, .12);
+  --theme-button: #81445f;
+  --theme-button-text: #ffffff;
+  --theme-hero: #ead6df;
+  --theme-route: #c9a3b6;
+}
+
+html[data-theme='dark'] {
+  --theme-background: #1c141b;
+  --theme-surface: #2a1e28;
+  --theme-surface-raised: #3a2a36;
+  --theme-text-primary: #f9edf3;
+  --theme-text-secondary: #d6bdca;
+  --theme-border: #624957;
+  --theme-accent: #e9afc9;
+  --theme-accent-soft: #49313f;
+  --theme-success: #d5a0b9;
+  --theme-success-soft: #513a47;
+  --theme-input: #231921;
+  --theme-shadow: rgba(0, 0, 0, .35);
+  --theme-button: #995777;
+  --theme-button-text: #ffffff;
+  --theme-hero: #4c3443;
+  --theme-route: #9a6a82;
+}
+
+html body, html .app-shell, html .workspace, html .main-content { background: var(--theme-background); color: var(--theme-text-primary); }
+html .app-shell :is(.sidebar, .topbar, .mobile-nav, .mobile-more-menu, .today-panel, .roadmap-panel, .career-priority, .home-project-summary, .points-display, .today-task-section, .holiday-plan-settings, .future-schedule-panel, .schedule-summary, .progress-mini, .curriculum-snapshot, .curriculum-progress, .curriculum-subject, .progress-overview, .progress-weekly, .progress-subjects, .progress-panel, .settings-panel, .career-panel, .career-stat-card, .opportunity-card, .project-create-panel, .project-list-panel, .project-detail-panel, .project-card, .weekly-test-card, .weekly-test-overview, .weekly-question-panel, .weekly-result-panel, .calendar-month, .calendar-day-detail, .calendar-day, .internship-stat, .internship-list-panel, .internship-form-panel, .resources-filter-panel, .resource-card) {
+  background: var(--theme-surface); border-color: var(--theme-border); color: var(--theme-text-primary);
+}
+html .app-shell :is(.avatar-banner) { background: var(--theme-hero); border-color: var(--theme-border); }
+html .app-shell :is(.future-day-card, .project-summary-grid, .home-calendar-strip, .curriculum-subject-heading, .progress-compact-stat, .progress-empty-state, .internship-company-mark, .resource-context, .calendar-day-stats span) { background: var(--theme-surface-raised); border-color: var(--theme-border); color: var(--theme-text-primary); }
+html .app-shell :is(h1, h2, h3, h4, .points-value, .summary-stat strong, .project-summary-grid strong, .curriculum-task-copy strong, .future-day-card li > span, .task-name) { color: var(--theme-text-primary); }
+html .app-shell :is(.welcome-kicker, .section-eyebrow, .sidebar-caption, .today-intro, .roadmap-intro, .today-dashboard-date, .schedule-footnote, .available-time, .avatar-kicker, .avatar-message p, .welcome-copy p, .project-summary-grid span, .home-project-summary > p, .curriculum-module-name, .curriculum-module-progress, .curriculum-task-copy > span, .curriculum-task-copy small, .roadmap-progress-note, .curriculum-note, .snapshot-label, .snapshot-empty, .snapshot-locked, .progress-eyebrow, .progress-intro, .progress-track-note, .future-day-card li small, .readiness-checklist label) { color: var(--theme-text-secondary); }
+html .app-shell :is(.brand-lockup, .topbar-mark, .nav-item, .mobile-more, .task-icon, .points-icon, .summary-stat, .career-priority, .readiness-checklist, .planner-date-navigation, .future-day-header, .future-day-budget, .curriculum-roadmap, .curriculum-snapshot) { color: var(--theme-text-primary); }
+html .app-shell :is(.brand-icon, .profile-initial, .character-figure, .task-icon, .points-icon, .aside-note-icon, .footer-sparkle, .curriculum-subject-index, .resource-icon, .settings-panel-icon) { background: var(--theme-accent-soft); color: var(--theme-accent); }
+html .app-shell :is(.nav-item.active, .nav-item:hover, .curriculum-track-tabs button.active, .progress-filter button[aria-pressed='true']) { background: var(--theme-accent-soft); color: var(--theme-accent); border-color: var(--theme-accent); }
+html .app-shell :is(.career-priority-tags span, .curriculum-task-status, .task-type, .resource-track-tag, .progress-track-tag, .sample-tag, .weekly-test-status, .project-status) { background: var(--theme-accent-soft); color: var(--theme-text-primary); }
+html .app-shell :is(.curriculum-progress-track, .snapshot-progress-track, .progress-track, .progress-mini-track, .weekly-question-progress) { background: var(--theme-accent-soft); }
+html .app-shell :is(.curriculum-progress-track span, .snapshot-progress-track span, .progress-track span, .progress-mini-track span, .weekly-question-progress span) { background: var(--theme-accent); }
+html .app-shell :is(input:not([type='checkbox']):not([type='radio']), select, textarea) { background: var(--theme-input); border-color: var(--theme-border); color: var(--theme-text-primary); }
+html .app-shell :is(input, textarea)::placeholder { color: var(--theme-text-secondary); }
+html .app-shell :is(input[type='checkbox'], input[type='radio']) { accent-color: var(--theme-accent); }
+html .app-shell :is(.primary-button, .project-primary-button, .weekly-test-primary-action, .internship-primary-button, .job-primary-button, .continue-ahead-button, .leave-form button:not(:disabled)) { background: var(--theme-button); border-color: var(--theme-button); color: var(--theme-button-text); }
+html .app-shell :is(.primary-button, .project-primary-button, .weekly-test-primary-action, .internship-primary-button, .job-primary-button, .continue-ahead-button, .leave-form button:not(:disabled)) :is(span, svg) { color: var(--theme-button-text); }
+html .app-shell :is(.roadmap-link, .view-today-button, .task-resource-link, .curriculum-task-resource-pill, .resource-open-link, a) { color: var(--theme-accent); }
+html .app-shell :is(.planner-date-arrow, .icon-button, .task-complete, .task-skip, .curriculum-task-state, .weekly-test-secondary-action) { background: var(--theme-surface-raised); border-color: var(--theme-border); color: var(--theme-text-primary); }
+
+.journey-map { position: relative; margin-top: 16px; padding: 12px; overflow: hidden; border: 1px solid var(--theme-border); background: var(--theme-surface-raised); }
+.journey-route { position: absolute; top: 44px; bottom: 44px; left: 13px; width: 60px; height: calc(100% - 88px); pointer-events: none; }
+.journey-route path { fill: none; stroke: var(--theme-route); stroke-width: 4; stroke-dasharray: 7 9; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.journey-stages { position: relative; z-index: 1; display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.journey-stage { display: grid; grid-template-columns: 60px minmax(0, 1fr); align-items: center; gap: 10px; min-width: 0; }
+.journey-node { z-index: 1; width: 39px; height: 39px; display: grid; place-items: center; justify-self: center; border: 2px solid var(--theme-border); border-radius: 50%; background: var(--theme-surface); color: var(--theme-text-secondary); font-size: 12px; font-weight: 700; }
+.journey-stage-copy { min-width: 0; padding: 10px 12px; border: 1px solid var(--theme-border); background: var(--theme-surface); color: var(--theme-text-primary); }
+.journey-stage-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; color: var(--theme-text-secondary); font-size: 9px; font-weight: 700; letter-spacing: .5px; }
+.journey-stage-copy strong { display: block; margin-top: 4px; color: var(--theme-text-primary); font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 500; }
+.journey-stage-copy p { margin: 3px 0 4px; color: var(--theme-text-secondary); font-size: 11px; line-height: 1.35; }
+.journey-stage-copy small { color: var(--theme-text-secondary); font-size: 10px; }
+.journey-state { color: var(--theme-text-secondary); }
+.journey-current .journey-node { border-color: var(--theme-accent); background: var(--theme-button); color: var(--theme-button-text); box-shadow: 0 0 0 5px var(--theme-accent-soft); }
+.journey-current .journey-stage-copy { border-color: var(--theme-accent); box-shadow: inset 3px 0 var(--theme-accent); }
+.journey-current .journey-state { color: var(--theme-accent); }
+.journey-complete .journey-node { border-color: var(--theme-accent); background: var(--theme-accent-soft); color: var(--theme-accent); }
+.journey-locked .journey-node { border-style: dashed; }
+html[data-theme='dark'] .app-shell .journey-current .journey-node { color: var(--theme-button-text); }
+html[data-theme='dark'] .app-shell .journey-stage :is(p, small, .journey-stage-top, .journey-state) { color: var(--theme-text-secondary); }
+html[data-theme='dark'] .app-shell .journey-current .journey-state { color: var(--theme-accent); }
+@media (max-width: 760px) {
+  .journey-map { padding: 10px 8px; }
+  .journey-route { left: 9px; width: 48px; }
+  .journey-stage { grid-template-columns: 48px minmax(0, 1fr); gap: 7px; }
+  .journey-stage-copy { padding: 9px; }
+  .journey-stage-copy strong { font-size: 16px; }
+}

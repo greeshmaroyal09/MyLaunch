@@ -21,7 +21,9 @@ export function CurriculumSnapshot({ schedule, progressState, onViewRoadmap, com
       .filter((module) => module.topics.some((topic) => topic.tasks.some((task) => todaySubjectIds.has(task.id))))
       .map((module) => `${subject.name} · ${module.title}`),
   )
+  const primaryTaskIds = new Set(getCurriculumTasks().filter((task) => task.subject === 'Python').map((task) => task.id))
   const nextTasks = getCurriculumTasks().filter((task) =>
+    primaryTaskIds.has(task.id) &&
     progressState[task.id] === 'AVAILABLE' && !todaySubjectIds.has(task.id),
   ).slice(0, 3)
   const lockedCount = Object.values(progressState).filter((state) => state === 'LOCKED').length

@@ -21,7 +21,7 @@ type ProgressPageProps = {
 
 const trackOptions: Array<{ value: ProgressTrackFilter; label: string }> = [
   { value: 'Primary', label: 'Primary track' },
-  { value: 'AI / ML', label: 'AI / ML track' },
+  { value: 'Secondary', label: 'Secondary track' },
   { value: 'All', label: 'All subjects' },
 ]
 
@@ -93,7 +93,7 @@ export function ProgressPage(props: ProgressPageProps) {
             <article className="progress-subject-row" key={subject.id}>
               <div className="progress-subject-info">
                 <strong>{subject.name}</strong>
-                <span className={`progress-track-tag ${subject.track === 'Primary' ? 'is-primary' : 'is-secondary'}`}>{subject.track === 'Primary' ? 'Primary' : 'AI / ML'}</span>
+                <span className={`progress-track-tag ${subject.track === 'Primary' ? 'is-primary' : 'is-secondary'}`}>{subject.track}</span>
               </div>
               <div className="progress-subject-bar-wrap">
                 <div className="progress-track"><span style={{ width: `${completionPercent}%` }} /></div>
@@ -104,7 +104,7 @@ export function ProgressPage(props: ProgressPageProps) {
           ))}
           {subjects.length === 0 && <p className="progress-empty">No subjects are available in this track.</p>}
         </div>
-        <p className="progress-track-note"><strong>Primary:</strong> Java, DSA, SQL, core CS, and backend. <strong>Secondary:</strong> Python and AI / ML subjects.</p>
+        <p className="progress-track-note"><strong>Primary:</strong> Applied AI foundations and delivery. <strong>Secondary:</strong> Java and core CS for college requirements and practice.</p>
       </section>
 
       <div className="progress-detail-grid">

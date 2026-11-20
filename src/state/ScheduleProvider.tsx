@@ -21,6 +21,7 @@ import { ScheduleService, sortScheduledTasks } from '../services/ScheduleService
 import { StorageService } from '../services/StorageService'
 import { WeeklyTestService } from '../services/WeeklyTestService'
 import { ScheduleContext } from './scheduleContext'
+import { HolidayPlanService, type HolidayPlanSettings } from '../services/HolidayPlanService'
 
 const dailyLimitMinutes = 100
 
@@ -37,6 +38,7 @@ type RuntimeState = {
   opportunities: Opportunity[]
   applications: Application[]
   theme: AppTheme
+  holidayPlan: HolidayPlanSettings
 }
 
 export function ScheduleProvider({ children }: { children: ReactNode }) {
@@ -57,6 +59,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       opportunities: state.opportunities,
       applications: state.applications,
       theme: state.theme,
+      holidayPlan: state.holidayPlan,
     })
   }, [state])
 
@@ -68,6 +71,16 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
     setState((current) => current.theme === theme ? current : { ...current, theme })
   }
 
+  function setHolidayPlan(holidayPlan: HolidayPlanSettings) {
+    if (!isDateKey(holidayPlan.startDate) || ![60, 120, 180].includes(holidayPlan.dailyMinutes)) return
+    setState((current) => {
+      const index = HolidayPlanService.indexOf(holidayPlan, current.schedule.date)
+      const date = index >= 0 ? current.schedule.date : holidayPlan.startDate
+      const schedule = HolidayPlanService.createDay(holidayPlan, index >= 0 ? index : 0, current.progress.taskProgress, current.progress.events)
+      return { ...current, holidayPlan, schedule, selectedCalendarDate: date, schedulesByDate: { ...current.schedulesByDate, [date]: schedule } }
+    })
+  }
+
   function completeTask(taskId: string) {
     setState((current) => {
       const taskProgressStatus = current.progress.taskProgress[taskId]
@@ -75,7 +88,9 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
         const progress = ProgressService.uncompleteTask(current.progress, taskId)
         if (progress === current.progress) return current
         const next = ScheduleService.uncompleteTask(current.schedule, current.progress.taskProgress, taskId)
-        const progressState = ScheduleService.getProgressState(curriculum, next.progressState)
+        // A roadmap task may not be on the selected day's schedule. Use the
+        // updated completion map even when uncompleteTask leaves that schedule unchanged.
+        const progressState = ScheduleService.getProgressState(curriculum, progress.taskProgress)
         const schedule = next.schedule
         const schedulesByDate = Object.fromEntries(Object.entries(current.schedulesByDate).map(([date, savedSchedule]) => [
           date,
@@ -168,6 +183,11 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
   function continueAhead() {
     setState((current) => {
       let candidate = nextDay(current.schedule.date)
+      const holidayIndex = HolidayPlanService.indexOf(current.holidayPlan, candidate)
+      if (holidayIndex >= 0) {
+        const schedule = HolidayPlanService.createDay(current.holidayPlan, holidayIndex, current.progress.taskProgress, current.progress.events)
+        return { ...current, schedule, selectedCalendarDate: candidate, schedulesByDate: { ...current.schedulesByDate, [candidate]: schedule } }
+      }
       for (let step = 0; step < 365; step += 1) {
         const status = CalendarService.getStatus(candidate, current.calendarConfiguration, current.leaveRecords)
         if (status === 'LEARNING_DAY') {
@@ -195,9 +215,14 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
   function navigateToDate(date: CalendarDate) {
     if (!isDateKey(date)) return
     setState((current) => {
+      const holidayIndex = HolidayPlanService.indexOf(current.holidayPlan, date)
+      if (holidayIndex >= 0) {
+        const schedule = HolidayPlanService.createDay(current.holidayPlan, holidayIndex, current.progress.taskProgress, current.progress.events)
+        return { ...current, schedule, selectedCalendarDate: date, schedulesByDate: { ...current.schedulesByDate, [date]: schedule } }
+      }
       if (CalendarService.getStatus(date, current.calendarConfiguration, current.leaveRecords) !== 'LEARNING_DAY') return current
       const savedSchedule = current.schedulesByDate[date]
-      const schedule = savedSchedule?.calendarStatus === 'LEARNING_DAY'
+      const schedule = savedSchedule?.calendarStatus === 'LEARNING_DAY' && (!savedSchedule.generated || compareDates(date, getTodayDate()) < 0)
         ? reconcileSchedule(savedSchedule, current.progress)
         : ScheduleService.restoreDate(
           date,
@@ -554,7 +579,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ScheduleContext.Provider value={{ ...state, setTheme, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, inspectDate, markLeave, removeLeave, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, updateCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication }}>
+    <ScheduleContext.Provider value={{ ...state, setTheme, setHolidayPlan, completeTask, skipTask, unskipTask, continueAhead, navigateToDate, inspectDate, markLeave, removeLeave, ensureWeeklyTest, startWeeklyTest, answerWeeklyQuestion, postponeWeeklyTest, submitWeeklyTest, createProject, updateProject, deleteProject, addProjectTask, updateProjectTask, deleteProjectTask, addProjectMilestone, updateProjectMilestone, deleteProjectMilestone, createCompany, updateCompany, deleteCompany, createOpportunity, updateOpportunity, deleteOpportunity, createApplication, updateApplication, deleteApplication }}>
       {children}
     </ScheduleContext.Provider>
   )
@@ -563,6 +588,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
 function createInitialState(): RuntimeState {
   const stored = StorageService.load()
   const today = getTodayDate()
+  const holidayPlan = stored?.holidayPlan ?? { startDate: '2026-11-25', dailyMinutes: 60 as const, budgetsByDate: {}, readinessChecks: {} }
   const demoCompanyIds = new Set(['company-demo-acme', 'company-demo-nova'])
   const demoOpportunityIds = new Set(['opportunity-demo-1', 'opportunity-demo-2'])
   const calendarConfiguration = stored?.calendarConfiguration ?? seedCalendarConfiguration
@@ -579,7 +605,11 @@ function createInitialState(): RuntimeState {
   const todayStatus = CalendarService.getStatus(today, calendarConfiguration, leaveRecords)
   let schedule = schedulesByDate[today]
 
-  if (todayStatus !== 'LEARNING_DAY') {
+  const holidayIndex = HolidayPlanService.indexOf(holidayPlan, today)
+  if (holidayIndex >= 0 || today < holidayPlan.startDate) {
+    progress = { ...progress, taskProgress: ScheduleService.getProgressState(curriculum, progress.taskProgress) }
+    schedule = HolidayPlanService.createDay(holidayPlan, Math.max(holidayIndex, 0), progress.taskProgress, progress.events)
+  } else if (todayStatus !== 'LEARNING_DAY') {
     schedule = emptySchedule(today, todayStatus)
   } else if (!schedule || schedule.calendarStatus !== todayStatus) {
     const generated = ScheduleService.restoreDate(
@@ -591,6 +621,18 @@ function createInitialState(): RuntimeState {
     )
     schedule = generated.schedule
     progress = { ...progress, taskProgress: generated.progressState }
+  } else if (schedule.generated) {
+    // Rebuild generated rows from the current curriculum while replaying dated
+    // completion/skip events. This keeps history intact when roadmap priorities change.
+    const restored = ScheduleService.restoreDate(
+      today,
+      progress.taskProgress,
+      progress.events,
+      calendarConfiguration,
+      leaveRecords,
+    )
+    schedule = restored.schedule
+    progress = { ...progress, taskProgress: restored.progressState }
   } else {
     schedule = reconcileSchedule(schedule, progress)
     progress = {
@@ -598,7 +640,7 @@ function createInitialState(): RuntimeState {
       taskProgress: reconcileProgressMap(progress.taskProgress, schedule),
     }
   }
-  schedulesByDate[today] = schedule
+  schedulesByDate[schedule.date] = schedule
   weeklyTests = WeeklyTestService.ensureTest({
     date: today,
     events: progress.events,
@@ -620,6 +662,7 @@ function createInitialState(): RuntimeState {
     opportunities,
     applications,
     theme: stored?.theme ?? 'light',
+    holidayPlan,
   }
 }
 
@@ -687,18 +730,6 @@ function updateTaskInSchedule(
 }
 
 function findPlannedDate(state: RuntimeState, taskId: string): CalendarDate {
-  let candidate = nextDay(state.schedule.date)
-  for (let step = 0; step < 365; step += 1) {
-    if (CalendarService.getStatus(candidate, state.calendarConfiguration, state.leaveRecords) === 'LEARNING_DAY') {
-      const schedule = ScheduleService.generateForDate(
-        candidate,
-        state.progress.taskProgress,
-        state.calendarConfiguration,
-        state.leaveRecords,
-      ).schedule
-      if (schedule.tasks.some((task) => task.id === taskId)) return candidate
-    }
-    candidate = nextDay(candidate)
-  }
-  return state.schedule.date
+  return HolidayPlanService.createPlan(state.holidayPlan, state.progress.taskProgress, state.progress.events)
+    .find((day) => day.tasks.some((task) => task.id === taskId))?.date ?? state.schedule.date
 }
